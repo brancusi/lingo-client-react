@@ -61,25 +61,21 @@ export function processNewLangit (data) {
 
 export function createLangit(sessionId) {
   return () => {
-    const baseFBURL = 'https://lingoapp.firebaseio.com/';
+    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
 
     return new Promise((res, rej)=>{
       const key = guid();
-      const fbRef = new Firebase(`${baseFBURL}langits/${key}`);
+      const fbRef = new Firebase(`${baseFBUrl}langits/${key}`);
       const data = {target:{local:'en'}};
 
-      fbRef.set(data, (err)=>{
-        (err) ? rej(err) : res(key);
-      });
+      fbRef.set(data, err=>err ? rej(err) : res(key));
     })
     .then(key => {
       return new Promise((res, rej)=>{
+        const fbRef = new Firebase(`${baseFBUrl}scratchPads/${sessionId}/`);
         const data = {type:'Langit', id:key};
-        const fbRef = new Firebase(`${baseFBURL}scratchPads/${sessionId}/`);
 
-        fbRef.push(data, (err)=>{
-          (err) ? rej(err) : res(key);
-        });
+        fbRef.push(data, err=>err ? rej(err) : res(data));
       });
     });
   };

@@ -17,10 +17,9 @@ export default class LearningToolbar extends React.Component {
     return (
       <div style={styles}>
         <p>Hi from Learning Tool Bar</p>
-        <button className='btn btn-default'
-                          onClick={createLangit}>
-                  Create a langit!
-                </button>
+        <button className='btn btn-default' onClick={createLangit}>
+          Create a langit!
+        </button>
       </div>
     );
   }

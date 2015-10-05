@@ -11,8 +11,9 @@ export default class SessionJoiner extends React.Component {
     this.props.join(this.state.roomName);
   }
 
-  _onChangeHandler (e) {
-    this.setState({roomName:e.target.value});
+  _onChangeHandler () {
+    const { roomNameInput } = this.refs;
+    this.setState({roomName:roomNameInput.value});
   }
 
   render () {
@@ -23,11 +24,10 @@ export default class SessionJoiner extends React.Component {
 
     return (
       <div className='well' style={styles}>
-      <input onChange={::this._onChangeHandler} />
-      <button className='btn btn-default'
-                        onClick={::this._clickHandler}>
-                Join a Room
-              </button>
+        <input ref="roomNameInput" onChange={::this._onChangeHandler} />
+        <button className='btn btn-default' onClick={::this._clickHandler}>
+          Join a Room
+        </button>
       </div>
     );
   }
