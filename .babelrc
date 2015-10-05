@@ -1,3 +1,5 @@
 {
-  "stage" : 0
+  "stage" : 0,
+  "plugins": [ "extensible-destructuring:after" ],
+  "blacklist": [ "es6.destructuring" ]
 }

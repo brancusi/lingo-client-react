@@ -1,43 +1,34 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import { joinRoom } from 'actions/room';
-import Chat from 'components/Chat';
+import * as sessionActions from 'actions/session';
+import SessionJoiner from 'components/SessionJoiner';
+import PropTypes from 'react-router';
 
 const mapStateToProps = (state) => ({
-  room : state.room
+  session : state.session
 });
 
 export class HomeView extends React.Component {
   static propTypes = {
     dispatch : React.PropTypes.func,
-    room  : React.PropTypes.object
-  }
+    session  : React.PropTypes.object
+  };
 
-  _joinRoom() {
+  _join(sessionUID) {
     const { dispatch } = this.props;
-    dispatch(joinRoom('reactyo'));
+    dispatch(sessionActions.retrieveSessionInfo(sessionUID))
+      .then(()=>{
+        this.context.history.pushState(null, `/sessions/${sessionUID}`);
+      });
   }
 
   render () {
-    const { dispatch, room } = this.props;
-    if(room.get('token') !== undefined){
-      return (
-        <div className='fluid-container text-center'>
-          <Chat room={room} />
-        </div>
-      );
-    }else{
-      return (
-        <div className='fluid-container text-center'>
-          <button className='btn btn-default'
-                  onClick={::this._joinRoom}>
-            Join a Room
-          </button>
-        </div>
-      );
-    }
-
+    return (
+      <SessionJoiner join={::this._join} />
+    );
   }
 }
+
+HomeView.contextTypes = { history: PropTypes.history };
 
 export default connect(mapStateToProps)(HomeView);
