@@ -33,7 +33,7 @@ export function processScratchPadChildRemoved(data) {
   };
 }
 
-export function retrieveSessionInfo(sessionUID) {
+export function retrieveSessionInfo(roomName) {
   return dispatch => {
     return fetch(`http://bobcat.lingo.development.c66.me/sessions`, {
       method: 'post',
@@ -42,7 +42,7 @@ export function retrieveSessionInfo(sessionUID) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        room_name:sessionUID
+        room_name:roomName
       })
     })
     .then(response => response.json())

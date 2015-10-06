@@ -7,14 +7,14 @@ export default class CoreLayout extends React.Component {
     children : React.PropTypes.element
   }
 
-  constructor () {
-    super();
+  componentWillMount () {
+    this.lock = new Auth0Lock('IXz44ZCMA14vR3WOb48SH9JS14eQd9Wx', 'lingo.auth0.com');
   }
 
   render () {
     return (
-      <div className='fluid-container'>
-        <Header />
+      <div className='container-fluid'>
+        <Header lock={this.lock} />
         {this.props.children}
       </div>
     );

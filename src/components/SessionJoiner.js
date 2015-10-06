@@ -1,5 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
+import guid from 'utils/guid';
 
 @Radium
 export default class SessionJoiner extends React.Component {
@@ -8,26 +9,21 @@ export default class SessionJoiner extends React.Component {
   }
 
   _clickHandler () {
-    this.props.join(this.state.roomName);
-  }
-
-  _onChangeHandler () {
-    const { roomNameInput } = this.refs;
-    this.setState({roomName:roomNameInput.value});
+    this.props.join(guid());
   }
 
   render () {
-    const styles = {
-      padding: '5px',
-      border: '3px dashed grey'
-    };
+    const styles = {};
 
     return (
-      <div className='well' style={styles}>
-        <input ref="roomNameInput" onChange={::this._onChangeHandler} />
-        <button className='btn btn-default' onClick={::this._clickHandler}>
-          Join a Room
-        </button>
+      <div className='col-md-4 col-md-offset-4' style={styles}>
+        <div className="card card-block">
+          <h3 className="card-title">Start a class!</h3>
+          <p className="card-text">Do a realdeal class with quickness.</p>
+          <a className='btn btn-primary' onClick={::this._clickHandler}>
+            Create a class
+          </a>
+        </div>
       </div>
     );
   }

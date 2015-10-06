@@ -4,15 +4,25 @@ import Radium from 'radium';
 @Radium
 export default class MediaStreams extends React.Component {
   static propTypes = {
-    session: React.PropTypes.object
+    session: React.PropTypes.object.isRequired
   }
 
   componentDidMount () {
     this._connectOT();
   }
 
-  componentWillUnmount () {
-    //  @TODO add cleanup here of ot
+  componentDidUpdate () {
+    this._connectOT();
+  }
+
+  shouldComponentUpdate (nextProps) {
+    const { session : { credentials }} = this.props;
+    
+    if(credentials){
+      return !credentials.equals(nextProps.session.get('credentials'));
+    } else {
+      return true;
+    }
   }
 
   _connectOT () {
@@ -36,6 +46,11 @@ export default class MediaStreams extends React.Component {
   }
 
   render () {
+
+    const { session : { credentials : { token }} } = this.props;
+
+    console.log('WTF', token);
+
     const styles = {
       padding: '5px',
       border: '3px dashed grey'

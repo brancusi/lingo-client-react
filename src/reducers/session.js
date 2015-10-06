@@ -7,13 +7,18 @@ import {
   PROCESS_NEW_LANGIT
 } from 'constants/session';
 
+// const initialState = new Map({
+//   credentials:new Map({
+//     apiKey:'45358762',
+//     sessionId:'2_MX40NTM1ODc2Mn5-MTQ0Mzk4NTc5NzU5NX5VZ05ubFlMNzk2bFlhS0RRVVA1TDFGV05-UH4',
+//     token:'T1==cGFydG5lcl9pZD00NTM1ODc2MiZzaWc9ZGZhZTdjNDNmOTE2MjZjMDc3MWNiZDg4ZGU4MzZkMTM5NGQ4NmIzMTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5UTTFPRGMyTW41LU1UUTBNems0TlRjNU56VTVOWDVWWjA1dWJGbE1OemsyYkZsaFMwUlJWVkExVERGR1YwNS1VSDQmY3JlYXRlX3RpbWU9MTQ0NDAwNDA2OSZub25jZT0wLjg3Nzk5MjQ4MjU2OTAzOTU=',
+//     uuid:'fake'
+//   }),
+//   scratchPad:new Map()
+// });
+
 const initialState = new Map({
-  credentials:new Map({
-    apiKey:'45358762',
-    sessionId:'2_MX40NTM1ODc2Mn5-MTQ0Mzk4NTc5NzU5NX5VZ05ubFlMNzk2bFlhS0RRVVA1TDFGV05-UH4',
-    token:'T1==cGFydG5lcl9pZD00NTM1ODc2MiZzaWc9ZGZhZTdjNDNmOTE2MjZjMDc3MWNiZDg4ZGU4MzZkMTM5NGQ4NmIzMTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5UTTFPRGMyTW41LU1UUTBNems0TlRjNU56VTVOWDVWWjA1dWJGbE1OemsyYkZsaFMwUlJWVkExVERGR1YwNS1VSDQmY3JlYXRlX3RpbWU9MTQ0NDAwNDA2OSZub25jZT0wLjg3Nzk5MjQ4MjU2OTAzOTU=',
-    uuid:'fake'
-  }),
+  credentials:new Map(),
   scratchPad:new Map()
 });
 
@@ -23,8 +28,7 @@ export default createReducer(initialState, {
     const newMap = new Map({
       apiKey,
       sessionId,
-      token,
-      uuid:'fake'
+      token
     });
 
     return state.set('credentials', newMap);

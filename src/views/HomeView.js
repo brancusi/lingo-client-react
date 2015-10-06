@@ -1,6 +1,6 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import * as sessionActions from 'actions/session';
+import { retrieveSessionInfo } from 'actions/session';
 import SessionJoiner from 'components/SessionJoiner';
 import PropTypes from 'react-router';
 
@@ -14,17 +14,25 @@ export class HomeView extends React.Component {
     session  : React.PropTypes.object
   };
 
-  _join(sessionUID) {
+  _join(sessionId) {
     const { dispatch } = this.props;
-    dispatch(sessionActions.retrieveSessionInfo(sessionUID))
+    dispatch(retrieveSessionInfo(sessionId))
       .then(()=>{
-        this.context.history.pushState(null, `/sessions/${sessionUID}`);
+        this.context.history.pushState(null, `/sessions/${sessionId}`);
       });
   }
 
   render () {
+    const styles = {}
+
     return (
-      <SessionJoiner join={::this._join} />
+      <div className='row'>
+        <div className='col-xs-12' style={styles}>
+          <div className='row'>
+            <SessionJoiner join={::this._join} />
+          </div>
+        </div>
+      </div>
     );
   }
 }

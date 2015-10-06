@@ -6,7 +6,8 @@ import LearningToolbar from 'components/LearningToolbar';
 import {
   processScratchPadChildAdded,
   processScratchPadChildRemoved,
-  createLangit
+  createLangit,
+  retrieveSessionInfo
 } from 'actions/session';
 
 const mapStateToProps = (state) => {
@@ -20,11 +21,42 @@ export class SessionView extends React.Component {
   };
 
   componentDidMount () {
-    this._addScratchListeners();
+    this._joinSession();
+  }
+
+  componentDidUpdate (previousState, prevProps) {
+    if(!this._listeningToFB){
+      this._joinSession();
+    }
+  }
+
+  shouldComponentUpdate (nextProps) {
+    const { session } = this.props;
+    if(session){
+      return !session.equals(nextProps.session);
+    } else {
+      return true;
+    }
   }
 
   componentWillUnmount () {
     this._removeScratchListeners();
+  }
+
+  _joinSession () {
+    const { session : { credentials : { sessionId } } } = this.props;
+
+    if(sessionId) {
+      this._addScratchListeners();
+    }else{
+      const { dispatch, params : { id } } = this.props;
+
+      if(id){
+        dispatch(retrieveSessionInfo(id));
+      }else{
+        console.log('Dispatch error, missing sessionId');
+      }
+    }
   }
 
   _createNewLangit () {
@@ -33,23 +65,30 @@ export class SessionView extends React.Component {
   }
 
   _addScratchListeners () {
-    const { dispatch, session : { credentials : { sessionId } } } = this.props;
-    const baseFBURL = 'https://lingoapp.firebaseio.com/scratchPads/';
+    if(!this._listeningToFB){
+      this._listeningToFB = true;
+      const { dispatch, session : { credentials : { sessionId } } } = this.props;
+      const baseFBURL = 'https://lingoapp.firebaseio.com/scratchPads/';
 
-    this.fbScratchRef = new Firebase(`${baseFBURL}${sessionId}`);
+      this.fbScratchRef = new Firebase(`${baseFBURL}${sessionId}`);
 
-    this.fbScratchRef.on('child_added', snapShot => dispatch(processScratchPadChildAdded(snapShot.val())));
-    this.fbScratchRef.on('child_removed', snapShot => dispatch(processScratchPadChildRemoved(snapShot.val())));
+      this.fbScratchRef.on('child_added', snapShot => dispatch(processScratchPadChildAdded(snapShot.val())));
+      this.fbScratchRef.on('child_removed', snapShot => dispatch(processScratchPadChildRemoved(snapShot.val())));
+    }
   }
 
   _removeScratchListeners () {
-    this.fbScratchRef.off('child_added');
-    this.fbScratchRef.off('child_removed');
+    this._listeningToFB = false;
+
+    if(this.fbScratchRef){
+      this.fbScratchRef.off('child_added');
+      this.fbScratchRef.off('child_removed');
+    }
   }
 
   render () {
     const { session, session:{ scratchPad } } = this.props;
-
+    console.log('Render called', session);
     return (
       <div>
         <MediaStreams session={session} />
