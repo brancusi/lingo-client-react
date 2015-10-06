@@ -24,12 +24,17 @@ export default class MediaStreams extends React.Component {
     this._connectOT();
   }
 
+  componentWillUnmount () {
+
+  }
+
   _connectOT () {
     const { session: { credentials: { apiKey, sessionId, token } } } = this.props;
     const { myStreamContainer, otherStreamsContainer } = this.refs;
 
     if (token) {
-      const otSession = OT.initSession(apiKey, sessionId);
+      this.otSession = OT.initSession(apiKey, sessionId);
+
       otSession.on('streamCreated', event=> {
         otSession.subscribe(event.stream, otherStreamsContainer, {insertMode: 'append', width: 200, height: 150});
       });
@@ -43,6 +48,8 @@ export default class MediaStreams extends React.Component {
       });
     }
   }
+
+  _disconnect () {}
 
   render () {
     const styles = {

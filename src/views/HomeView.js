@@ -26,12 +26,8 @@ export class HomeView extends React.Component {
     const styles = {};
 
     return (
-      <div className='row'>
-        <div className='col-xs-12' style={styles}>
-          <div className='row'>
-            <SessionJoiner join={::this._join} />
-          </div>
-        </div>
+      <div className='row' style={styles}>
+        <SessionJoiner join={::this._join} />
       </div>
     );
   }

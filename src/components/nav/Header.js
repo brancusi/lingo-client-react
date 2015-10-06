@@ -25,15 +25,17 @@ export default class Header extends React.Component {
     );
 
     return (
-      <nav className="navbar navbar-light" style={styles}>
-        <a className="navbar-brand" href="#">Lingo</a>
-        <ul className="nav navbar-nav">
-          <li className="nav-item">
-            <a className="nav-link" href="#">About</a>
-          </li>
-        </ul>
-        {loginUI}
-      </nav>
+      <div className="row">
+        <nav className="col-sm-12 navbar navbar-light" style={styles}>
+          <a className="navbar-brand" href="#">Lingo</a>
+          <ul className="nav navbar-nav">
+            <li className="nav-item">
+              <a className="nav-link" href="#">About</a>
+            </li>
+          </ul>
+          {loginUI}
+        </nav>
+      </div>
     );
   }
 }
