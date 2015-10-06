@@ -46,8 +46,8 @@ export default class MediaStreams extends React.Component {
 
   render () {
     const styles = {
-      padding: '5px',
-      border: '3px dashed grey'
+      border: '3px dashed grey',
+      display: 'flex'
     };
 
     return (

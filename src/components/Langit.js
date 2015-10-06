@@ -29,22 +29,21 @@ export default class Langit extends React.Component {
 
   render () {
     const styles = {
-      padding: '5px',
       height: '200px',
-      border: '3px dashed grey'
+      border: '3px dashed grey',
+      marginBottom: '20px'
     };
 
     const aceStyles = {
       width: '100%',
-      height: '100px'
+      height: '100%'
     };
 
-    const { model } = this.props;
-
     return (
-      <div className='card' style={styles}>
-      <p>adasd</p>
-        <div ref="aceContainer" style={aceStyles}></div>
+      <div className='row'>
+        <div className='col-sm-6 col-sm-offset-3' style={styles}>
+          <div ref="aceContainer" style={aceStyles}></div>
+        </div>
       </div>
     );
   }

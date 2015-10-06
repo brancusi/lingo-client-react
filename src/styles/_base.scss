@@ -1,1 +1,16 @@
 // Settings go here
+
+.siteWrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.flexStretch {
+  flex: 1;
+}
+
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}

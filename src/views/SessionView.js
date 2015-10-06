@@ -89,11 +89,14 @@ export class SessionView extends React.Component {
 
   render () {
     const { session, session:{ scratchPad } } = this.props;
+
     return (
-      <div>
-        <MediaStreams session={session} />
-        <ScratchPad scratchPad={scratchPad} />
+      <div className='flexStretch flexCol'>
+        <div className='flexStretch' >
+          <ScratchPad scratchPad={scratchPad} />
+        </div>
         <LearningToolbar createLangit={::this._createNewLangit}/>
+        <MediaStreams session={session} />
       </div>
     );
   }

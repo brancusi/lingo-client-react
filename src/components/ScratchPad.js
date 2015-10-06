@@ -9,9 +9,7 @@ export default class ScratchPad extends React.Component {
   }
 
   render () {
-    const styles = {
-      padding: '5px'
-    };
+    const styles = {};
 
     const { scratchPad } = this.props;
 
@@ -26,11 +24,13 @@ export default class ScratchPad extends React.Component {
     }).toArray();
 
     return (
-      <div style={styles}>
-        <p>Hi from ScratchPad</p>
-        <ol>
-          {itemList}
-        </ol>
+      <div className='col-sm-12' style={styles}>
+        <h3>Scratch Pad</h3>
+        <div className='row'>
+          <div className='col-sm-12'>
+            {itemList}
+          </div>
+        </div>
       </div>
     );
   }

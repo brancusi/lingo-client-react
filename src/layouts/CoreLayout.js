@@ -13,7 +13,7 @@ export default class CoreLayout extends React.Component {
 
   render () {
     return (
-      <div className='container-fluid'>
+      <div className='siteWrapper'>
         <Header lock={this.lock} />
         {this.props.children}
       </div>

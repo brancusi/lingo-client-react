@@ -10,13 +10,12 @@ export default class LearningToolbar extends React.Component {
   render () {
     const { createLangit } = this.props;
     const styles = {
-      padding: '5px',
-      border: '1px solid blue'
+      padding: '5px'
     };
 
     return (
       <div style={styles}>
-        <p>Hi from Learning Tool Bar</p>
+        <h3>Toolbar</h3>
         <button className='btn btn-default' onClick={createLangit}>
           Create a langit!
         </button>
