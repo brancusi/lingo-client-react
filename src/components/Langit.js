@@ -30,20 +30,20 @@ export default class Langit extends React.Component {
   render () {
     const styles = {
       padding: '5px',
+      height: '200px',
       border: '3px dashed grey'
     };
 
     const aceStyles = {
       width: '100%',
-      height: '50px',
-      border: '3px dashed red'
+      height: '100px'
     };
 
     const { model } = this.props;
 
     return (
       <div className='card' style={styles}>
-        <p>Future dopeness - {model.id}</p>
+      <p>adasd</p>
         <div ref="aceContainer" style={aceStyles}></div>
       </div>
     );

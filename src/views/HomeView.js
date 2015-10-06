@@ -23,7 +23,7 @@ export class HomeView extends React.Component {
   }
 
   render () {
-    const styles = {}
+    const styles = {};
 
     return (
       <div className='row'>

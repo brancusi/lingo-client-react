@@ -10,8 +10,7 @@ export default class ScratchPad extends React.Component {
 
   render () {
     const styles = {
-      padding: '5px',
-      border: '1px solid red'
+      padding: '5px'
     };
 
     const { scratchPad } = this.props;

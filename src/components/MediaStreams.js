@@ -11,18 +11,17 @@ export default class MediaStreams extends React.Component {
     this._connectOT();
   }
 
-  componentDidUpdate () {
-    this._connectOT();
-  }
-
   shouldComponentUpdate (nextProps) {
     const { session : { credentials }} = this.props;
-    
-    if(credentials){
+    if (credentials) {
       return !credentials.equals(nextProps.session.get('credentials'));
     } else {
       return true;
     }
+  }
+
+  componentDidUpdate () {
+    this._connectOT();
   }
 
   _connectOT () {
@@ -46,11 +45,6 @@ export default class MediaStreams extends React.Component {
   }
 
   render () {
-
-    const { session : { credentials : { token }} } = this.props;
-
-    console.log('WTF', token);
-
     const styles = {
       padding: '5px',
       border: '3px dashed grey'

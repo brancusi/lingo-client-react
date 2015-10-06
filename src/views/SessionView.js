@@ -17,25 +17,26 @@ const mapStateToProps = (state) => {
 export class SessionView extends React.Component {
   static propTypes = {
     dispatch : React.PropTypes.func,
-    session  : React.PropTypes.object
+    session  : React.PropTypes.object,
+    params  : React.PropTypes.object
   };
 
   componentDidMount () {
     this._joinSession();
   }
 
-  componentDidUpdate (previousState, prevProps) {
-    if(!this._listeningToFB){
-      this._joinSession();
-    }
-  }
-
   shouldComponentUpdate (nextProps) {
     const { session } = this.props;
-    if(session){
+    if (session) {
       return !session.equals(nextProps.session);
     } else {
       return true;
+    }
+  }
+
+  componentDidUpdate () {
+    if (!this._listeningToFB) {
+      this._joinSession();
     }
   }
 
@@ -46,15 +47,15 @@ export class SessionView extends React.Component {
   _joinSession () {
     const { session : { credentials : { sessionId } } } = this.props;
 
-    if(sessionId) {
+    if (sessionId) {
       this._addScratchListeners();
-    }else{
+    } else {
       const { dispatch, params : { id } } = this.props;
 
-      if(id){
+      if (id) {
         dispatch(retrieveSessionInfo(id));
-      }else{
-        console.log('Dispatch error, missing sessionId');
+      } else {
+        //  console.log('Dispatch error, missing sessionId');
       }
     }
   }
@@ -65,7 +66,7 @@ export class SessionView extends React.Component {
   }
 
   _addScratchListeners () {
-    if(!this._listeningToFB){
+    if (!this._listeningToFB) {
       this._listeningToFB = true;
       const { dispatch, session : { credentials : { sessionId } } } = this.props;
       const baseFBURL = 'https://lingoapp.firebaseio.com/scratchPads/';
@@ -80,7 +81,7 @@ export class SessionView extends React.Component {
   _removeScratchListeners () {
     this._listeningToFB = false;
 
-    if(this.fbScratchRef){
+    if (this.fbScratchRef) {
       this.fbScratchRef.off('child_added');
       this.fbScratchRef.off('child_removed');
     }
@@ -88,7 +89,6 @@ export class SessionView extends React.Component {
 
   render () {
     const { session, session:{ scratchPad } } = this.props;
-    console.log('Render called', session);
     return (
       <div>
         <MediaStreams session={session} />
