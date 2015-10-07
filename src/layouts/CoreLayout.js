@@ -14,7 +14,7 @@ export default class CoreLayout extends React.Component {
   render () {
     const styles = {
       backgroundColor: '#F9F9F9'
-    }
+    };
 
     return (
       <div className='container-fluid siteWrapper' style={styles}>

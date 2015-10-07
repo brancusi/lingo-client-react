@@ -18,12 +18,12 @@ export default class Langit extends React.Component {
     const editor = ace.edit(aceContainer);
     editor.setTheme('ace/theme/textmate');
     editor.setOptions({
-			maxLines:100,
-			fontSize:36,
-			showPrintMargin:false,
-			showGutter:false,
-			highlightActiveLine:false
-		});
+      maxLines:100,
+      fontSize:36,
+      showPrintMargin:false,
+      showGutter:false,
+      highlightActiveLine:false
+    });
 
     const session = editor.getSession();
     session.setUseWrapMode(true);

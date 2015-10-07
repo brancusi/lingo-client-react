@@ -41,7 +41,7 @@ export default class SessionJoiner extends React.Component {
       color: '#0584C6',
       fontSize: '2em',
       fontWeight: 'bold'
-    }
+    };
 
     return (
       <div className='col-xs-12 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3 col-xl-6 col-xl-offset-3' style={styles}>
