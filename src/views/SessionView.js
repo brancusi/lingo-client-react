@@ -8,7 +8,8 @@ import {
   processScratchPadChildAdded,
   processScratchPadChildRemoved,
   createLangit,
-  retrieveSessionInfo
+  retrieveSessionInfo,
+  addChatMessage
 } from 'actions/session';
 
 const mapStateToProps = (state) => {
@@ -66,6 +67,11 @@ export class SessionView extends React.Component {
     dispatch(createLangit(sessionId));
   }
 
+  _addChatMessage (msg) {
+    const { dispatch } = this.props;
+    dispatch(addChatMessage(msg));
+  }
+
   _addScratchListeners () {
     if (!this._listeningToFB) {
       this._listeningToFB = true;
@@ -89,14 +95,13 @@ export class SessionView extends React.Component {
   }
 
   render () {
-    const { session, session:{ scratchPad } } = this.props;
-
+    const { session, session:{ scratchPad, sessionChat } } = this.props;
     return (
       <div className='flexStretch flexCol'>
         <div className='flexStretch' >
           <ScratchPad scratchPad={scratchPad} />
         </div>
-        <Chat />
+        <Chat sessionChat={sessionChat} addChatMessage={::this._addChatMessage}/>
         <LearningToolbar createLangit={::this._createNewLangit}/>
         <MediaStreams session={session} />
       </div>

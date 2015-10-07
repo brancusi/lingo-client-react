@@ -2,7 +2,8 @@ import {
   JOIN_SESSION,
   PROCESS_SCRATCH_PAD_DATA_ADDED,
   PROCESS_SCRATCH_PAD_DATA_REMOVED,
-  PROCESS_NEW_LANGIT
+  PROCESS_NEW_LANGIT,
+  ADD_CHAT_MESSAGE
 } from 'constants/session';
 import fetch from 'isomorphic-fetch';
 import guid from 'utils/guid';
@@ -79,4 +80,12 @@ export function createLangit(sessionId) {
       });
     });
   };
+}
+
+
+export function addChatMessage (msg) {
+  return {
+    type: ADD_CHAT_MESSAGE,
+    payload: msg
+  }
 }

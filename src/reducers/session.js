@@ -1,10 +1,13 @@
 import { createReducer } from 'utils';
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
+import guid from 'utils/guid';
+
 import {
   JOIN_SESSION,
   PROCESS_SCRATCH_PAD_DATA_ADDED,
   PROCESS_SCRATCH_PAD_DATA_REMOVED,
-  PROCESS_NEW_LANGIT
+  PROCESS_NEW_LANGIT,
+  ADD_CHAT_MESSAGE
 } from 'constants/session';
 
 // const initialState = new Map({
@@ -19,7 +22,8 @@ import {
 
 const initialState = new Map({
   credentials:new Map(),
-  scratchPad:new Map()
+  scratchPad:new Map(),
+  sessionChat:new List()
 });
 
 export default createReducer(initialState, {
@@ -43,6 +47,12 @@ export default createReducer(initialState, {
   },
   [ PROCESS_NEW_LANGIT ]:(state)=>{
     return state;
+  },
+  [ ADD_CHAT_MESSAGE ]:(state, payload)=>{
+    const id = guid();
+    const msg = new Map({id, msg:payload});
+    const sessionChat = state.get('sessionChat').push(msg);
+    return state.set('sessionChat', sessionChat);
   }
 
 });

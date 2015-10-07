@@ -4,7 +4,9 @@ import Radium from 'radium';
 @Radium
 export default class Chat extends React.Component {
   static propTypes = {
-    history: React.PropTypes.object.isRequired
+    history: React.PropTypes.object.isRequired,
+    sessionChat:  React.PropTypes.object.isRequired,
+    addChatMessage: React.PropTypes.func.isRequired,
   }
 
   componentDidMount () {
@@ -12,7 +14,9 @@ export default class Chat extends React.Component {
   }
 
   _onEnter (e) {
+    const { chatInput } = this.refs;
     e.preventDefault();
+    this.props.addChatMessage(chatInput.value);
   }
 
   render () {
@@ -40,11 +44,20 @@ export default class Chat extends React.Component {
       marginBottom: 10
     };
 
+    const { sessionChat } = this.props;
+
+
+    const messages = sessionChat
+      .map(data => {
+        console.log('data', data);
+        return (<p key={data.get('id')}>{data.get('msg')}</p>);
+      });
+
     return (
       <div className='row' style={styles}>
         <p style={chatTitleStyles}>Chat</p>
         <div className='flexStretch' style={historyStyles}>
-          <p>hi</p>
+          {messages}
         </div>
         <form onSubmit={::this._onEnter}>
           <input ref='chatInput' placeholder='start typing' />
