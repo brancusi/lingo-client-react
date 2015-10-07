@@ -8,7 +8,9 @@ export default class MediaStreams extends React.Component {
   }
 
   componentDidMount () {
-    this._connectOT();
+    this._createRxStreams();
+    this._subscribeToStreams();
+    this._processPropChange();
   }
 
   shouldComponentUpdate (nextProps) {
@@ -21,46 +23,83 @@ export default class MediaStreams extends React.Component {
   }
 
   componentDidUpdate () {
-    this._connectOT();
+    this._processPropChange();
   }
 
   componentWillUnmount () {
-
+    this._disposeRxStreams();
   }
 
-  _connectOT () {
-    const { session: { credentials: { apiKey, sessionId, token } } } = this.props;
+  _createRxStreams () {
+    this._credentialsSubject = new Rx.Subject();
+
+    this._credentials = this._credentialsSubject
+      .filter(obj => obj !== undefined)
+      .filter(obj => obj.apiKey !== undefined);
+
+    this._sessions = this._credentials
+      .map(({apiKey, sessionId, token}) => ({session:OT.initSession(apiKey, sessionId), token}));
+
+    this._connectedSessions = this._sessions
+      .flatMapLatest(({session, token}) => Rx.Observable.create(observer => {
+        session.connect(token, err => {
+          if (err) {
+            observer.onError(err);
+          } else {
+            observer.onNext(session);
+          }
+        });
+
+        return Rx.Disposable.create(() => session.disconnect());
+      }));
+
+    this._createdStreams = this._sessions
+      .flatMap(({session}) => Rx.Observable.create(observer => {
+        session.on('streamCreated', event => observer.onNext({stream:event.stream, session}));
+        return Rx.Disposable.create(() => session.off('streamCreated'));
+      }));
+  }
+
+  _subscribeToStreams () {
     const { myStreamContainer, otherStreamsContainer } = this.refs;
+    const myMediaOptions = { width : 200, height: 150 };
+    const othersMediaOptions = { insertMode: 'append', width : 200, height: 150 };
 
-    if (token) {
-      this.otSession = OT.initSession(apiKey, sessionId);
+    this._disposeSessionSubscription = this._connectedSessions
+        .subscribe(session => session.publish(myStreamContainer, myMediaOptions));
 
-      otSession.on('streamCreated', event=> {
-        otSession.subscribe(event.stream, otherStreamsContainer, {insertMode: 'append', width: 200, height: 150});
-      });
+    this._disposeStreamCreatedSubscription = this._createdStreams
+        .subscribe(({stream, session}) => session.subscribe(stream, otherStreamsContainer, othersMediaOptions));
+  }
 
-      otSession.connect(token, err=>{
-        if (err) {
-          //  Handle error
-        } else {
-          otSession.publish(myStreamContainer, {width: 200, height: 150});
-        }
-      });
+  _processPropChange () {
+    const { session: { credentials: { apiKey, sessionId, token } } } = this.props;
+    this._credentialsSubject.onNext({apiKey, sessionId, token});
+  }
+
+  _disposeRxStreams () {
+    if (this._disposeSessionSubscription) {
+      this._disposeSessionSubscription.dispose();
+    }
+
+    if (this._disposeStreamCreatedSubscription) {
+      this._disposeStreamCreatedSubscription.dispose();
     }
   }
 
-  _disconnect () {}
-
   render () {
-    const styles = {
-      border: '3px dashed grey',
+    const rootStyles = {
+      display: 'flex'
+    };
+
+    const otherStreamsContainerStyles = {
       display: 'flex'
     };
 
     return (
-      <div style={styles}>
+      <div className='row' style={rootStyles}>
         <div ref='myStreamContainer'></div>
-        <div ref='otherStreamsContainer'></div>
+        <div ref='otherStreamsContainer' style={otherStreamsContainerStyles}></div>
       </div>
     );
   }

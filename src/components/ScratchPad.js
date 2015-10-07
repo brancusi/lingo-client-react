@@ -9,7 +9,9 @@ export default class ScratchPad extends React.Component {
   }
 
   render () {
-    const styles = {};
+    const styles = {
+      marginTop: '4em'
+    };
 
     const { scratchPad } = this.props;
 
@@ -25,7 +27,6 @@ export default class ScratchPad extends React.Component {
 
     return (
       <div className='col-sm-12' style={styles}>
-        <h3>Scratch Pad</h3>
         <div className='row'>
           <div className='col-sm-12'>
             {itemList}

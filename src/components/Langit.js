@@ -17,21 +17,31 @@ export default class Langit extends React.Component {
 
     const editor = ace.edit(aceContainer);
     editor.setTheme('ace/theme/textmate');
+    editor.setOptions({
+			maxLines:100,
+			fontSize:36,
+			showPrintMargin:false,
+			showGutter:false,
+			highlightActiveLine:false
+		});
+
     const session = editor.getSession();
     session.setUseWrapMode(true);
     session.setUseWorker(false);
-    session.setMode('ace/mode/javascript');
+    session.setMode('ace/mode/text');
 
     Firepad.fromACE(firepadRef, editor, {
       defaultText: ''
     });
+
+    editor.focus();
   }
 
   render () {
     const styles = {
-      height: '200px',
-      border: '3px dashed grey',
-      marginBottom: '20px'
+      minHeight: '3em',
+      marginBottom: '20px',
+      padding: '1em'
     };
 
     const aceStyles = {
@@ -41,7 +51,7 @@ export default class Langit extends React.Component {
 
     return (
       <div className='row'>
-        <div className='col-sm-6 col-sm-offset-3' style={styles}>
+        <div className='col-sm-6 col-sm-offset-3 card' style={styles}>
           <div ref="aceContainer" style={aceStyles}></div>
         </div>
       </div>

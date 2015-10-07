@@ -2,6 +2,7 @@ import React       from 'react';
 import { connect } from 'react-redux';
 import { retrieveSessionInfo } from 'actions/session';
 import SessionJoiner from 'components/SessionJoiner';
+import Footer from 'components/nav/Footer';
 import PropTypes from 'react-router';
 
 const mapStateToProps = (state) => ({
@@ -26,8 +27,11 @@ export class HomeView extends React.Component {
     const styles = {};
 
     return (
-      <div className='row' style={styles}>
-        <SessionJoiner join={::this._join} />
+      <div className='flexCol flexStretch' style={styles}>
+        <div className='row flexStretch'>
+          <SessionJoiner join={::this._join} />
+        </div>
+        <Footer />
       </div>
     );
   }

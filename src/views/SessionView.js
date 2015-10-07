@@ -2,6 +2,7 @@ import React       from 'react';
 import { connect } from 'react-redux';
 import MediaStreams from 'components/MediaStreams';
 import ScratchPad from 'components/ScratchPad';
+import Chat from 'components/widgets/Chat';
 import LearningToolbar from 'components/LearningToolbar';
 import {
   processScratchPadChildAdded,
@@ -95,6 +96,7 @@ export class SessionView extends React.Component {
         <div className='flexStretch' >
           <ScratchPad scratchPad={scratchPad} />
         </div>
+        <Chat />
         <LearningToolbar createLangit={::this._createNewLangit}/>
         <MediaStreams session={session} />
       </div>
