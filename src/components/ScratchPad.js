@@ -8,10 +8,26 @@ export default class ScratchPad extends React.Component {
     scratchPad: React.PropTypes.object.isRequired
   }
 
-  componentDidUpdate () {
-    const { canvas } = this.refs;
-    TweenMax.to(canvas, 0.25, {scrollTo:{x:"max"}});
+  componentDidMount () {
+    this._setupPanning();
+    this._scrollToEnd();
+  }
 
+  componentDidUpdate () {
+    this._scrollToEnd();
+  }
+
+  componentWillUnmount () {
+    this.dragsSubscription.dispose();
+  }
+
+  _scrollToEnd () {
+    const { canvas } = this.refs;
+    TweenMax.to(canvas, 0.25, {scrollTo:{x:'max'}});
+  }
+
+  _setupPanning () {
+    const { canvas } = this.refs;
     const hammer = new Hammer(canvas, { direction: Hammer.DIRECTION_ALL, threshold: 0 });
 
     const panStarts = Rx.Observable.fromEventPattern(
@@ -31,11 +47,11 @@ export default class ScratchPad extends React.Component {
     )
       .map(e => e.deltaX);
 
-    const drags = panStarts
+    this.dragsSubscription = panStarts
       .filter(e => e.srcEvent.srcElement.className !== 'ace_content')
       .subscribe(e => {
         const startX = e.deltaX;
-        const canvasOriginX = canvas.scrollLeft+startX;
+        const canvasOriginX = canvas.scrollLeft + startX;
         canvas.scrollLeft = canvasOriginX;
 
         pans
@@ -43,7 +59,6 @@ export default class ScratchPad extends React.Component {
           .distinctUntilChanged()
           .subscribe(x => canvas.scrollLeft = canvasOriginX - x);
       });
-
   }
 
   render () {
@@ -56,20 +71,13 @@ export default class ScratchPad extends React.Component {
       display: 'flex',
       flex: 1,
       overflowX:'auto'
-    }
+    };
 
     const { scratchPad } = this.props;
 
     const itemList = scratchPad
-      .sort((a, b) => {
-        return a.t - b.t;
-      })
-      .map(item=>{
-        switch (item.type) {
-        case 'Langit' :
-          return (<Langit key={item.id} model={item}/>);
-        }
-      })
+      .sort((a, b) => a.t - b.t)
+      .map(item=>(<Langit key={item.id} model={item}/>))
       .toArray();
 
     return (

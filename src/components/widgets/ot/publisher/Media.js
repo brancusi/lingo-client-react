@@ -4,7 +4,7 @@ import Radium from 'radium';
 @Radium
 export default class Media extends React.Component {
   static propTypes = {
-    session: React.PropTypes.object,
+    session: React.PropTypes.object
   }
 
   componentDidMount () {
@@ -12,7 +12,7 @@ export default class Media extends React.Component {
     const options = { width : 200, height: 150 };
     const { container } = this.refs;
 
-    this.publisher = session.publish(container, options)
+    this.publisher = session.publish(container, options);
   }
 
   componentWillUnmount () {
@@ -25,7 +25,7 @@ export default class Media extends React.Component {
       <div>
         <div ref='container'/>
       </div>
-    )
+    );
   }
 
 }

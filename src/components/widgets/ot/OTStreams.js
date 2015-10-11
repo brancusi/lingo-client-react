@@ -1,14 +1,13 @@
 import React from 'react';
 import Radium from 'radium';
-import { Map } from 'immutable';
 import PublishManager from 'components/widgets/ot/publisher/Manager';
 import StreamsManager from 'components/widgets/ot/streams/Manager';
 
 @Radium
 export default class OTStreams extends React.Component {
   static propTypes = {
-    credentials: React.PropTypes.object.isRequired,
-  }
+    credentials: React.PropTypes.object.isRequired
+  };
 
   constructor(props) {
     super(props);
@@ -17,10 +16,6 @@ export default class OTStreams extends React.Component {
 
   componentDidMount () {
     this._connectSession();
-  }
-
-  componentWillUnmount () {
-    this.session.disconnect();
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -35,9 +30,13 @@ export default class OTStreams extends React.Component {
   componentDidUpdate (prevProps) {
     const { credentials } = this.props;
 
-    if(!credentials.equals(prevProps.credentials)){
+    if (!credentials.equals(prevProps.credentials)) {
       this._processPropChange();
     }
+  }
+
+  componentWillUnmount () {
+    this.session.disconnect();
   }
 
   _processPropChange () {
@@ -46,7 +45,7 @@ export default class OTStreams extends React.Component {
   }
 
   _clearSession () {
-    if(this.session){
+    if (this.session) {
       this.session.disconnect();
     }
   }
@@ -70,27 +69,22 @@ export default class OTStreams extends React.Component {
       display: 'flex'
     };
 
-    const otherStreamsContainerStyles = {
-      display: 'flex'
-    };
-
     const { session } = this.state;
     const isConnected = ((session !== null) && (session !== undefined));
 
-    if(isConnected){
+    if (isConnected) {
       return (
         <div className='row' style={rootStyles}>
           <PublishManager session={session} />
           <StreamsManager session={session} />
         </div>
       );
-    }else{
+    } else {
       return (
         <div className='row' style={rootStyles}>
           <h4>I pity the unconnected fool</h4>
         </div>
       );
     }
-
   }
 }

@@ -7,7 +7,7 @@ import {
   PROCESS_AUTH0_DATA
 } from 'constants/session';
 import fetch from 'isomorphic-fetch';
-import guid from 'utils/guid';
+import guidFn from 'utils/guid';
 import moment from 'moment';
 
 export function processSessionInfo(data) {
@@ -66,7 +66,7 @@ export function createLangit(sessionId) {
     const baseFBUrl = 'https://lingoapp.firebaseio.com/';
 
     return new Promise((res, rej)=>{
-      const key = guid();
+      const key = guidFn();
       const fbRef = new Firebase(`${baseFBUrl}langits/${key}`);
       const data = {target:{local:'en'}};
 
@@ -87,12 +87,19 @@ export function createLangit(sessionId) {
   };
 }
 
-export function persistChatMessage (sessionId, msg) {
+export function proccessChatHistory (history) {
+  return {
+    type: MERGE_CHAT_HISTORY,
+    payload: history
+  };
+}
+
+export function persistChatMessage (sessionId, msg, userId) {
   return dispatch => {
     const baseFBUrl = 'https://lingoapp.firebaseio.com/';
-    const key = guid();
+    const key = guidFn();
     const fbRef = new Firebase(`${baseFBUrl}chats/${sessionId}/${key}`);
-    const message = {m:msg, t:moment().valueOf()};
+    const message = {m:msg, t:moment().valueOf(), u:userId};
 
     dispatch(proccessChatHistory({[key]:message}));
 
@@ -102,20 +109,14 @@ export function persistChatMessage (sessionId, msg) {
   };
 }
 
-export function proccessChatHistory (history) {
-  return {
-    type: MERGE_CHAT_HISTORY,
-    payload: history
-  };
-}
-
 export function processProfileData (identityProviderData, auth0Data) {
   return {
     type: PROCESS_AUTH0_DATA,
     payload: {profile: identityProviderData, auth: auth0Data}
-  }
+  };
 }
 
+/*
 export function processAuth0Data (data) {
 
   return dispatch => {
@@ -132,3 +133,4 @@ export function processAuth0Data (data) {
     });
   };
 }
+*/

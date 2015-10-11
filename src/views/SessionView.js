@@ -15,14 +15,18 @@ import {
 } from 'actions/session';
 
 const mapStateToProps = (state) => {
-  return {session : state.session};
+  return {
+    session : state.session,
+    auth : state.auth
+  };
 };
 
 export class SessionView extends React.Component {
   static propTypes = {
     dispatch : React.PropTypes.func,
     session  : React.PropTypes.object,
-    params  : React.PropTypes.object
+    auth     : React.PropTypes.object,
+    params   : React.PropTypes.object
   };
 
   componentDidMount () {
@@ -70,8 +74,16 @@ export class SessionView extends React.Component {
   }
 
   _addChatMessage (msg) {
-    const { dispatch, session : { credentials : { sessionId } } } = this.props;
-    dispatch(persistChatMessage(sessionId, msg));
+    const {
+      dispatch,
+      session : { credentials : {
+        sessionId
+      }},
+      auth : { profile : {
+        given_name
+      }}
+    } = this.props;
+    dispatch(persistChatMessage(sessionId, msg, given_name));
   }
 
   _addFBListeners () {
@@ -102,7 +114,7 @@ export class SessionView extends React.Component {
   }
 
   _hasCredentialsFragment () {
-    const { session, session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
+    const { session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
 
     const comStyles = {
       alignItems: 'flex-end',
@@ -141,7 +153,7 @@ export class SessionView extends React.Component {
   }
 
   render () {
-    const { session, session:{ credentials : { apiKey, sessionId, token } } } = this.props;
+    const { session:{ credentials : { apiKey, sessionId, token } } } = this.props;
 
     const hasCredentials = ((apiKey !== undefined) &&
                             (sessionId !== undefined) &&
@@ -152,9 +164,7 @@ export class SessionView extends React.Component {
     } else {
       return this._defaultFragment();
     }
-
   }
-
 }
 
 export default connect(mapStateToProps)(SessionView);

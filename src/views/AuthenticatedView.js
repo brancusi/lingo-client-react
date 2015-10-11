@@ -1,6 +1,6 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import { login, logout } from 'actions/auth';
+import { login } from 'actions/auth';
 import { isAuthenticated } from 'services/auth';
 import { bindActionCreators } from 'redux';
 
@@ -8,20 +8,25 @@ const mapStateToProps = (state) => ({
   auth  : state.auth
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ login }, dispatch);
+const mapDispatchToProps = dispatch => {
+  return {
+    loginActions: bindActionCreators({ login }, dispatch)
+  };
+};
 
 export class AuthenticatedView extends React.Component {
   static propTypes = {
-    auth   : React.PropTypes.object,
-    children : React.PropTypes.element
+    auth          : React.PropTypes.object,
+    children      : React.PropTypes.element,
+    loginActions  : React.PropTypes.object
   };
 
   render () {
     const styles = {};
 
-    const { auth, children, login } = this.props;
+    const { auth, children, loginActions } = this.props;
 
-    if(isAuthenticated(auth)){
+    if (isAuthenticated(auth)) {
       return (
         <div className='row stretch' style={styles}>
           <div className='col-sm-12 flexCol stretch'>
@@ -29,16 +34,14 @@ export class AuthenticatedView extends React.Component {
           </div>
         </div>
       );
-    }else{
-      login();
+    } else {
+      loginActions.login();
       return (
         <div className='row stretch' style={styles}>
           <p>Loading</p>
         </div>
       );
     }
-
-
   }
 }
 

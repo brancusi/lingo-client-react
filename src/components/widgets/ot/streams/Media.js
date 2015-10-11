@@ -26,7 +26,7 @@ export default class Media extends React.Component {
       <div>
         <div ref='container'/>
       </div>
-    )
+    );
   }
 
 }

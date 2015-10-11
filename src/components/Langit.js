@@ -39,7 +39,6 @@ export default class Langit extends React.Component {
 
   render () {
     const styles = {
-      minHeight: '3em',
       marginBottom: '20px',
       padding: '1em',
       minWidth: '50%',

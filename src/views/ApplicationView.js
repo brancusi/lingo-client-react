@@ -11,8 +11,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => {
   return {
     loginActions: bindActionCreators({ login, logout }, dispatch)
-  }
-}
+  };
+};
 
 export class ApplicationView extends React.Component {
   static propTypes = {

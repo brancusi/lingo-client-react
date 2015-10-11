@@ -6,7 +6,7 @@ import Media from 'components/widgets/ot/streams/Media';
 @Radium
 export default class Manager extends React.Component {
   static propTypes = {
-    session: React.PropTypes.object,
+    session: React.PropTypes.object
   }
 
   constructor(props) {
@@ -51,14 +51,12 @@ export default class Manager extends React.Component {
     const { streams } = this.state;
 
     const mediaCollection = streams
-      .map((stream, key) => {
-        return (<Media key={key} session={session} stream={stream} />)
-      }).toArray();
+      .map((stream, key) => (<Media key={key} session={session} stream={stream} />)).toArray();
 
     return (
       <div>
         {mediaCollection}
       </div>
-    )
+    );
   }
 }

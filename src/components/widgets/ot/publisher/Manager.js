@@ -5,7 +5,7 @@ import Media from 'components/widgets/ot/publisher/Media';
 @Radium
 export default class Manager extends React.Component {
   static propTypes = {
-    session: React.PropTypes.object,
+    session: React.PropTypes.object
   }
 
   constructor(props) {
@@ -28,7 +28,7 @@ export default class Manager extends React.Component {
         </a>
         <Media session={session} />
       </div>
-    )
+    );
   }
 
   _buildUnPublishedFragment () {
@@ -39,7 +39,7 @@ export default class Manager extends React.Component {
         </a>
         <p>Nada</p>
       </div>
-    )
+    );
   }
 
   render () {

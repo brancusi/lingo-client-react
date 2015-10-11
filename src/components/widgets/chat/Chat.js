@@ -6,8 +6,7 @@ import Message from 'components/widgets/chat/Message';
 export default class Chat extends React.Component {
   static propTypes = {
     sessionChat: React.PropTypes.object.isRequired,
-    sessionChat:  React.PropTypes.object.isRequired,
-    addChatMessage: React.PropTypes.func.isRequired,
+    addChatMessage: React.PropTypes.func.isRequired
   }
 
   componentDidMount () {
@@ -30,7 +29,7 @@ export default class Chat extends React.Component {
     this.setState({msg:''});
   }
 
-  _onPress (e) {
+  _onPress () {
     const { chatInput } = this.refs;
     this.setState({msg:chatInput.value});
   }
@@ -50,8 +49,6 @@ export default class Chat extends React.Component {
       padding: '1rem',
       flexDirection: 'column'
     };
-
-    const chatTitleStyles = {};
 
     const historyStyles = {
       border: '0.0625rem solid #e5e5e5',

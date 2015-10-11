@@ -1,9 +1,7 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import { retrieveSessionInfo } from 'actions/session';
 import SessionJoiner from 'components/SessionJoiner';
 import Footer from 'components/nav/Footer';
-import PropTypes from 'react-router';
 
 const mapStateToProps = (state) => ({
   session : state.session

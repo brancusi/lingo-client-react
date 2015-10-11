@@ -9,20 +9,29 @@ export default class Message extends React.Component {
   }
 
   render () {
-    const { message : { m, t } } = this.props;
-    const timeAgo = moment.unix(t).fromNow();
-    const name = 'Aram';
+    const { message : { m, t, u } } = this.props;
+    const timeAgo = moment(t).format('HH:mm');
 
     const styles = {
 
+    };
+
+    const nameStyles = {
+      fontSize: '0.9em',
+      color: 'grey'
+    };
+
+    const timeStyles = {
+      fontSize: '0.7em',
+      fontStyle: 'italic',
+      color: 'grey'
     };
 
     return (
       <div style={styles}>
         <div className='row'>
           <div className='col-sm-12'>
-            <span>{name}</span>
-            <span>{timeAgo}</span>
+            <span style={nameStyles}>{u}</span> <span style={timeStyles}>{timeAgo}</span>
           </div>
         </div>
         <div className='row'>

@@ -11,14 +11,14 @@ export function processAuth0Data (profile, jwt, accessToken) {
       jwt,
       accessToken
     }
-  }
+  };
 }
 
 export function processAuth0Error (err) {
   return {
     type: Actions.AUTH_ERROR,
     payload: err
-  }
+  };
 }
 
 export function login () {
@@ -32,8 +32,7 @@ export function login () {
 }
 
 export function logout () {
-  console.log('Clear secure');
   return {
     type: 'LOGOUT_YO'
-  }
+  };
 }

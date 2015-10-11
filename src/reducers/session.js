@@ -1,13 +1,12 @@
 import { createReducer } from 'utils';
-import { Map, Set } from 'immutable';
+import { Map } from 'immutable';
 
 import {
   JOIN_SESSION,
   PROCESS_SCRATCH_PAD_DATA_ADDED,
   PROCESS_SCRATCH_PAD_DATA_REMOVED,
   PROCESS_NEW_LANGIT,
-  MERGE_CHAT_HISTORY,
-  PROCESS_AUTH0_DATA
+  MERGE_CHAT_HISTORY
 } from 'constants/session';
 
 // const initialState = new Map({
@@ -53,9 +52,5 @@ export default createReducer(initialState, {
     const merged = state.get('sessionChat').merge(new Map(payload));
     const sorted = merged.sortBy(msg => msg.t);
     return state.set('sessionChat', sorted);
-  },
-  [ PROCESS_AUTH0_DATA ]:(state, payload)=>{
-    console.log(payload);
-    return state;
   }
 });
