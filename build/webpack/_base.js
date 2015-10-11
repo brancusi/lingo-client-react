@@ -45,6 +45,10 @@ const webpackConfig = {
     ],
     loaders : [
       {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
         test : /\.(js|jsx)$/,
         exclude : /node_modules/,
         loader  : 'babel',

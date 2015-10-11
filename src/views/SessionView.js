@@ -1,15 +1,17 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import MediaStreams from 'components/MediaStreams';
+import OTStreams from 'components/widgets/ot/OTStreams';
 import ScratchPad from 'components/ScratchPad';
-import Chat from 'components/widgets/Chat';
+import Chat from 'components/widgets/chat/Chat';
 import LearningToolbar from 'components/LearningToolbar';
+import LinkShare from 'components/widgets/share/LinkShare';
 import {
   processScratchPadChildAdded,
   processScratchPadChildRemoved,
   createLangit,
   retrieveSessionInfo,
-  addChatMessage
+  persistChatMessage,
+  proccessChatHistory
 } from 'actions/session';
 
 const mapStateToProps = (state) => {
@@ -50,7 +52,7 @@ export class SessionView extends React.Component {
     const { session : { credentials : { sessionId } } } = this.props;
 
     if (sessionId) {
-      this._addScratchListeners();
+      this._addFBListeners();
     } else {
       const { dispatch, params : { id } } = this.props;
 
@@ -68,20 +70,21 @@ export class SessionView extends React.Component {
   }
 
   _addChatMessage (msg) {
-    const { dispatch } = this.props;
-    dispatch(addChatMessage(msg));
+    const { dispatch, session : { credentials : { sessionId } } } = this.props;
+    dispatch(persistChatMessage(sessionId, msg));
   }
 
-  _addScratchListeners () {
+  _addFBListeners () {
     if (!this._listeningToFB) {
       this._listeningToFB = true;
       const { dispatch, session : { credentials : { sessionId } } } = this.props;
-      const baseFBURL = 'https://lingoapp.firebaseio.com/scratchPads/';
-
-      this.fbScratchRef = new Firebase(`${baseFBURL}${sessionId}`);
-
+      const baseFBURL = 'https://lingoapp.firebaseio.com/';
+      this.fbScratchRef = new Firebase(`${baseFBURL}scratchPads/${sessionId}`).orderByChild('t');
       this.fbScratchRef.on('child_added', snapShot => dispatch(processScratchPadChildAdded(snapShot.val())));
       this.fbScratchRef.on('child_removed', snapShot => dispatch(processScratchPadChildRemoved(snapShot.val())));
+
+      this.fbChatRef = new Firebase(`${baseFBURL}chats/${sessionId}`);
+      this.fbChatRef.on('value', snapShot => dispatch(proccessChatHistory(snapShot.val())));
     }
   }
 
@@ -92,20 +95,64 @@ export class SessionView extends React.Component {
       this.fbScratchRef.off('child_added');
       this.fbScratchRef.off('child_removed');
     }
+
+    if (this.fbChatRef) {
+      this.fbChatRef.off('value');
+    }
+  }
+
+  _hasCredentialsFragment () {
+    const { session, session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
+
+    const comStyles = {
+      alignItems: 'flex-end',
+      zIndex: 1000
+    };
+
+    const shareLink = `http://localhost:5000/sessions/${guid}`;
+
+    return (
+      <div className='stretch flexCol'>
+        <LinkShare link={shareLink} />
+        <div className='row stretch' >
+          <ScratchPad scratchPad={scratchPad} />
+        </div>
+
+        <LearningToolbar createLangit={::this._createNewLangit}/>
+
+        <div className='row' style={comStyles}>
+          <div className='col-sm-6 col-xl-8'>
+            <OTStreams credentials={credentials} />
+          </div>
+          <div className='col-sm-6 col-xl-4'>
+            <Chat sessionChat={sessionChat} addChatMessage={::this._addChatMessage}/>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  _defaultFragment () {
+    return (
+      <div className='stretch flexCol'>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   render () {
-    const { session, session:{ scratchPad, sessionChat } } = this.props;
-    return (
-      <div className='flexStretch flexCol'>
-        <div className='flexStretch' >
-          <ScratchPad scratchPad={scratchPad} />
-        </div>
-        <Chat sessionChat={sessionChat} addChatMessage={::this._addChatMessage}/>
-        <LearningToolbar createLangit={::this._createNewLangit}/>
-        <MediaStreams session={session} />
-      </div>
-    );
+    const { session, session:{ credentials : { apiKey, sessionId, token } } } = this.props;
+
+    const hasCredentials = ((apiKey !== undefined) &&
+                            (sessionId !== undefined) &&
+                            (token !== undefined));
+
+    if (hasCredentials) {
+      return this._hasCredentialsFragment();
+    } else {
+      return this._defaultFragment();
+    }
+
   }
 
 }

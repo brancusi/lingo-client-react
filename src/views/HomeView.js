@@ -15,20 +15,20 @@ export class HomeView extends React.Component {
     session  : React.PropTypes.object
   };
 
-  _join(sessionId) {
-    const { dispatch } = this.props;
-    dispatch(retrieveSessionInfo(sessionId))
-      .then(()=>{
-        this.context.history.pushState(null, `/sessions/${sessionId}`);
-      });
+  static contextTypes = {
+    history: React.PropTypes.object
+  };
+
+  _join(guid) {
+    this.context.history.pushState(null, `/sessions/${guid}`);
   }
 
   render () {
     const styles = {};
 
     return (
-      <div className='flexCol flexStretch' style={styles}>
-        <div className='row flexStretch'>
+      <div className='flexCol stretch' style={styles}>
+        <div className='row stretch'>
           <SessionJoiner join={::this._join} />
         </div>
         <Footer />
@@ -36,7 +36,5 @@ export class HomeView extends React.Component {
     );
   }
 }
-
-HomeView.contextTypes = { history: PropTypes.history };
 
 export default connect(mapStateToProps)(HomeView);

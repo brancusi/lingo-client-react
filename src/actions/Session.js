@@ -3,19 +3,22 @@ import {
   PROCESS_SCRATCH_PAD_DATA_ADDED,
   PROCESS_SCRATCH_PAD_DATA_REMOVED,
   PROCESS_NEW_LANGIT,
-  ADD_CHAT_MESSAGE
+  MERGE_CHAT_HISTORY,
+  PROCESS_AUTH0_DATA
 } from 'constants/session';
 import fetch from 'isomorphic-fetch';
 import guid from 'utils/guid';
+import moment from 'moment';
 
 export function processSessionInfo(data) {
-  const { api_key, session_id, token} = data;
+  const { api_key, session_id, token, guid } = data;
   return {
     type: JOIN_SESSION,
     payload: {
       apiKey:api_key,
       sessionId:session_id,
-      token
+      token,
+      guid
     }
   };
 }
@@ -34,7 +37,7 @@ export function processScratchPadChildRemoved(data) {
   };
 }
 
-export function retrieveSessionInfo(roomName) {
+export function retrieveSessionInfo(guid) {
   return dispatch => {
     return fetch(`http://bobcat.lingo.development.c66.me/sessions`, {
       method: 'post',
@@ -42,9 +45,7 @@ export function retrieveSessionInfo(roomName) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        room_name:roomName
-      })
+      body: JSON.stringify({guid})
     })
     .then(response => response.json())
     .then(data => {
@@ -74,7 +75,11 @@ export function createLangit(sessionId) {
     .then(key => {
       return new Promise((res, rej)=>{
         const fbRef = new Firebase(`${baseFBUrl}scratchPads/${sessionId}/`);
-        const data = {type:'Langit', id:key};
+        const data = {
+          id:key,
+          type:'Langit',
+          t:moment().valueOf()
+        };
 
         fbRef.push(data, err=>err ? rej(err) : res(data));
       });
@@ -82,10 +87,48 @@ export function createLangit(sessionId) {
   };
 }
 
+export function persistChatMessage (sessionId, msg) {
+  return dispatch => {
+    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+    const key = guid();
+    const fbRef = new Firebase(`${baseFBUrl}chats/${sessionId}/${key}`);
+    const message = {m:msg, t:moment().valueOf()};
 
-export function addChatMessage (msg) {
+    dispatch(proccessChatHistory({[key]:message}));
+
+    return new Promise((res, rej)=>{
+      fbRef.set(message, err=>err ? rej(err) : res(message));
+    });
+  };
+}
+
+export function proccessChatHistory (history) {
   return {
-    type: ADD_CHAT_MESSAGE,
-    payload: msg
+    type: MERGE_CHAT_HISTORY,
+    payload: history
+  };
+}
+
+export function processProfileData (identityProviderData, auth0Data) {
+  return {
+    type: PROCESS_AUTH0_DATA,
+    payload: {profile: identityProviderData, auth: auth0Data}
   }
+}
+
+export function processAuth0Data (data) {
+
+  return dispatch => {
+    return fetch(`https://www.googleapis.com/plus/v1/people/108416995229181777890?key=AIzaSyCHNgYJfjqQ4nemJvKca6onFuiE30ZEuQc`, {
+      method: 'get',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(identityData => {
+      dispatch(processProfileData(identityData, data));
+    });
+  };
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import guid from 'utils/guid';
+import color from 'color';
 
 @Radium
 export default class SessionJoiner extends React.Component {
@@ -22,7 +23,8 @@ export default class SessionJoiner extends React.Component {
       backgroundColor: '#0584C6',
       color: '#F9F9FA',
       fontFamily: 'sofia-pro-soft, sans-serif',
-      borderRadius: '8px'
+      borderRadius: '8px',
+      padding: '3em'
     };
 
     const titleStyles = {
@@ -31,16 +33,21 @@ export default class SessionJoiner extends React.Component {
     };
 
     const bodyStyles = {
-      fontWeight: 'medium',
-      fontSize: '2em'
+      fontWeight: 'regular',
+      fontSize: '2em',
+      paddingBottom: '2em'
     };
 
     const buttonStyles = {
       fontFamily: 'sofia-pro-soft, sans-serif',
-      backgroundColor: '#CDECF9',
+      background: '#CDECF9',
       color: '#0584C6',
       fontSize: '2em',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      ':hover': {
+        color: '#CDECF9',
+        background: color('#CDECF9').darken(0.3).hexString()
+      }
     };
 
     return (

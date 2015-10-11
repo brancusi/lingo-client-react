@@ -6,8 +6,12 @@
   flex-direction: column;
 }
 
-.flexStretch {
+.stretch {
   flex: 1;
+}
+
+.flexEnd {
+  align-self: flex-end;
 }
 
 .flexCol {

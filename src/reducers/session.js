@@ -1,13 +1,13 @@
 import { createReducer } from 'utils';
-import { Map, List } from 'immutable';
-import guid from 'utils/guid';
+import { Map, Set } from 'immutable';
 
 import {
   JOIN_SESSION,
   PROCESS_SCRATCH_PAD_DATA_ADDED,
   PROCESS_SCRATCH_PAD_DATA_REMOVED,
   PROCESS_NEW_LANGIT,
-  ADD_CHAT_MESSAGE
+  MERGE_CHAT_HISTORY,
+  PROCESS_AUTH0_DATA
 } from 'constants/session';
 
 // const initialState = new Map({
@@ -23,16 +23,17 @@ import {
 const initialState = new Map({
   credentials:new Map(),
   scratchPad:new Map(),
-  sessionChat:new List()
+  sessionChat:new Map()
 });
 
 export default createReducer(initialState, {
   [ JOIN_SESSION ]:(state, payload)=>{
-    const { apiKey, sessionId, token} = payload;
+    const { apiKey, sessionId, token, guid } = payload;
     const newMap = new Map({
       apiKey,
       sessionId,
-      token
+      token,
+      guid
     });
 
     return state.set('credentials', newMap);
@@ -48,11 +49,13 @@ export default createReducer(initialState, {
   [ PROCESS_NEW_LANGIT ]:(state)=>{
     return state;
   },
-  [ ADD_CHAT_MESSAGE ]:(state, payload)=>{
-    const id = guid();
-    const msg = new Map({id, msg:payload});
-    const sessionChat = state.get('sessionChat').push(msg);
-    return state.set('sessionChat', sessionChat);
+  [ MERGE_CHAT_HISTORY ]:(state, payload)=>{
+    const merged = state.get('sessionChat').merge(new Map(payload));
+    const sorted = merged.sortBy(msg => msg.t);
+    return state.set('sessionChat', sorted);
+  },
+  [ PROCESS_AUTH0_DATA ]:(state, payload)=>{
+    console.log(payload);
+    return state;
   }
-
 });

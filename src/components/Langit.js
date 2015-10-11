@@ -41,7 +41,10 @@ export default class Langit extends React.Component {
     const styles = {
       minHeight: '3em',
       marginBottom: '20px',
-      padding: '1em'
+      padding: '1em',
+      minWidth: '50%',
+      width: '50%',
+      minHeight: '5em'
     };
 
     const aceStyles = {
@@ -49,11 +52,12 @@ export default class Langit extends React.Component {
       height: '100%'
     };
 
+    const { model: { id } } = this.props;
+
     return (
-      <div className='row'>
-        <div className='col-sm-6 col-sm-offset-3 card' style={styles}>
-          <div ref="aceContainer" style={aceStyles}></div>
-        </div>
+      <div style={styles}>
+        <h4>{id}</h4>
+        <div ref="aceContainer" style={aceStyles}></div>
       </div>
     );
   }

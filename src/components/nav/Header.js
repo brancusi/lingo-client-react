@@ -1,39 +1,28 @@
 import React from 'react';
 import Radium from 'radium';
+import { Link } from 'react-router';
+import LoginUI from 'components/nav/LoginUI';
 
 @Radium
 export default class Header extends React.Component {
   static propTypes = {
-    lock : React.PropTypes.object
+    login: React.PropTypes.func.isRequired,
+    logout: React.PropTypes.func.isRequired,
+    auth : React.PropTypes.object
   }
 
-  _showLock () {
-    this.props.lock.show();
-  }
-  //  <a className="nav-link" href="#">Method Man | Logout</a>
   render () {
     const styles = {
       backgroundColor: '#e3f2fd'
     };
 
-    const loginUI = (
-      <ul className="nav navbar-nav pull-right">
-        <li className="nav-item">
-          <a className="nav-link" onClick={::this._showLock}>Login</a>
-        </li>
-      </ul>
-    );
+    const { login, logout, auth } = this.props;
 
     return (
       <div className="row">
         <nav className="col-sm-12 navbar navbar-light" style={styles}>
-          <a className="navbar-brand" href="#">Lingo</a>
-          <ul className="nav navbar-nav">
-            <li className="nav-item">
-              <a className="nav-link" href="#">About</a>
-            </li>
-          </ul>
-          {loginUI}
+          <Link to={`/`} className="navbar-brand">Lingo</Link>
+          <LoginUI login={login} logout={logout} auth={auth}/>
         </nav>
       </div>
     );
