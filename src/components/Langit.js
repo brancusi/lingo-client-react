@@ -1,5 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
+import Recorder from 'opus-recorder';
 
 @Radium
 export default class Langit extends React.Component {
@@ -35,6 +36,24 @@ export default class Langit extends React.Component {
     });
 
     editor.focus();
+
+    const mediaConstraints = { audio: true };
+
+    navigator.getUserMedia(mediaConstraints, stream => {
+      this.recorder = new MediaStreamRecorder(stream);
+      this.recorder.mimeType = 'audio/ogg';
+      this.recorder.audioChannels = 1;
+    }, e => console.log(e));
+
+  }
+
+  _startRecording () {
+    this.recorder.start();
+  }
+
+  _stopRecording () {
+    this.recorder.stop();
+    this.recorder.save();
   }
 
   render () {
@@ -57,6 +76,8 @@ export default class Langit extends React.Component {
       <div style={styles}>
         <h4>{id}</h4>
         <div ref="aceContainer" style={aceStyles}></div>
+        <a className='btn' onClick={::this._startRecording}>Start</a>
+        <a className='btn' onClick={::this._stopRecording}>Stop</a>
       </div>
     );
   }

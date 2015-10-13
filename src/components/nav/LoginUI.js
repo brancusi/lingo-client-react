@@ -15,9 +15,11 @@ export default class LoginUI extends React.Component {
 
     if (isAuthenticated(auth)) {
       const { profile } = auth;
+      const name = profile.get('given_name');
+
       return (<ul className="nav navbar-nav pull-right">
         <li className="nav-item">
-          <a className="nav-link" onClick={logout}>Hi {profile.given_name}! - Logout</a>
+          <a className="nav-link" onClick={logout}>Hi {name}! - Logout</a>
         </li>
       </ul>);
     } else {
