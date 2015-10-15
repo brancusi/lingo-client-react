@@ -1,6 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
-import Recorder from 'opus-recorder';
+import Recorder from 'utils/Recorder';
 
 @Radium
 export default class Langit extends React.Component {
@@ -37,13 +37,43 @@ export default class Langit extends React.Component {
 
     editor.focus();
 
-    const mediaConstraints = { audio: true };
+    this._createRecoder();
 
-    navigator.getUserMedia(mediaConstraints, stream => {
-      this.recorder = new MediaStreamRecorder(stream);
-      this.recorder.mimeType = 'audio/ogg';
-      this.recorder.audioChannels = 1;
-    }, e => console.log(e));
+  }
+
+  _createRecoder () {
+      this.recorder = new Recorder();
+
+      this.recorder.addEventListener( "dataAvailable", function(e){
+
+        var uploadData = new FormData();
+        var thisShit = e.detail;
+
+        return fetch(`http://localhost:3000/aws/sign`, {
+          method: 'post',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: {}
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          var xhr = new XMLHttpRequest();
+          xhr.open("PUT", data.signed_url);
+          xhr.onload = function(e) {
+            console.log(data.path);
+          };
+          xhr.onerror = function() {
+              alert("Could not upload file.");
+          };
+          xhr.send(thisShit);
+        });
+
+      });
+
+      this.recorder.initStream();
 
   }
 
@@ -53,7 +83,6 @@ export default class Langit extends React.Component {
 
   _stopRecording () {
     this.recorder.stop();
-    this.recorder.save();
   }
 
   render () {

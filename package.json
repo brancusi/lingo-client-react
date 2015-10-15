@@ -24,6 +24,7 @@
     "babel": "^5.8.23",
     "clipboard": "git@github.com:kmalakoff/clipboard.js.git#cf3a77c073fb037844d95c4699aa11959b68d0c8",
     "deep-equal": "^1.0.1",
+    "file-loader": "^0.8.4",
     "history": "^1.9.0",
     "immutable": "^3.7.4",
     "invariant": "^2.1.0",
@@ -37,6 +38,8 @@
     "react-router": "1.0.0-rc2",
     "redux": "^3.0.0",
     "redux-thunk": "^1.0.0",
+    "rx": "^4.0.6",
+    "worker-loader": "^0.6.0",
     "yargs": "^3.18.0"
   },
   "devDependencies": {
@@ -57,6 +60,7 @@
     "eslint-plugin-react": "^3.3.1",
     "extract-text-webpack-plugin": "^0.8.0",
     "html-webpack-plugin": "^1.6.1",
+    "imports-loader": "^0.6.4",
     "json-loader": "^0.5.3",
     "karma": "^0.13.8",
     "karma-coverage": "^0.5.0",

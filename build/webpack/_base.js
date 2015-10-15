@@ -40,7 +40,7 @@ const webpackConfig = {
       {
         test : /\.(js|jsx)$/,
         loaders : ['eslint-loader'],
-        exclude : /node_modules/
+        exclude : [/node_modules/, /opus\/workers/]
       }
     ],
     loaders : [
@@ -50,7 +50,7 @@ const webpackConfig = {
       },
       {
         test : /\.(js|jsx)$/,
-        exclude : /node_modules/,
+        exclude : [/node_modules/, /opus\/workers/],
         loader  : 'babel',
         query   : {
           stage    : 0,

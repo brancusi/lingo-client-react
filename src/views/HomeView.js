@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import SessionJoiner from 'components/SessionJoiner';
 import Footer from 'components/nav/Footer';
 
+import fetch from 'isomorphic-fetch';
+
 const mapStateToProps = (state) => ({
   session : state.session
 });
@@ -30,6 +32,7 @@ export class HomeView extends React.Component {
           <SessionJoiner join={::this._join} />
         </div>
         <Footer />
+
       </div>
     );
   }
