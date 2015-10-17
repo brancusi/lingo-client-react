@@ -14,6 +14,8 @@ import {
   proccessChatHistory
 } from 'actions/session';
 
+import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3.js';
+
 const mapStateToProps = (state) => {
   return {
     session : state.session,

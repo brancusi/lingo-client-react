@@ -1,6 +1,16 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
 import Radium from 'radium';
-import Recorder from 'utils/Recorder';
+import Rx from 'rx';
+import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3-min.js';
+
+import SoundByte from 'components/widgets/audio/SoundByte';
+import AudioRecorder from 'components/widgets/audio/AudioRecorder';
+
+import Victor from 'victor';
+
+import { aabbLine } from 'utils/geom';
 
 @Radium
 export default class Langit extends React.Component {
@@ -37,76 +47,102 @@ export default class Langit extends React.Component {
 
     editor.focus();
 
-    this._createRecoder();
-
+    this._createLines();
   }
 
-  _createRecoder () {
-      this.recorder = new Recorder();
+  _createLines () {
+    const { sat, aceContainer, plumbContainer } = this.refs;
+    const instance = jsPlumb.getInstance({Container: plumbContainer});
 
-      this.recorder.addEventListener( "dataAvailable", function(e){
+    instance.importDefaults({
+      Connector : [ "Straight" ],
+      Anchors : [ "Center", "Center" ],
+      Endpoints: ['Blank', 'Blank']
+    });
 
-        var uploadData = new FormData();
-        var thisShit = e.detail;
+    const degInc = 360/this.widgetRefs.length;
 
-        return fetch(`http://localhost:3000/aws/sign`, {
-          method: 'post',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: {}
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          var xhr = new XMLHttpRequest();
-          xhr.open("PUT", data.signed_url);
-          xhr.onload = function(e) {
-            console.log(data.path);
-          };
-          xhr.onerror = function() {
-              alert("Could not upload file.");
-          };
-          xhr.send(thisShit);
+    this.widgetRefs
+      .map((ref, index) => {
+        const domNode = ReactDOM.findDOMNode(this.refs[ref]);
+        instance.connect({
+          source:domNode,
+          target:aceContainer
         });
 
-      });
+        const inc = degInc * index;
+        const angleVec = new Victor(100, 100)
+          .rotateDeg(inc)
+          .normalize();
 
-      this.recorder.initStream();
+        const outsidePoint = angleVec.clone()
+          .multiplyScalar(10000);
 
-  }
+        const elWidth = aceContainer.offsetWidth;
+        const elHeight = aceContainer.offsetHeight;
 
-  _startRecording () {
-    this.recorder.start();
-  }
+        const boxPoint = aabbLine(outsidePoint.x, outsidePoint.y, -30, -30, elWidth+30, elHeight+30);
+        const boxVec = new Victor(boxPoint.x, boxPoint.y);
+        const distance = new Victor(elWidth/2, elHeight/2).distance(boxVec);
+        const min = 100;
+        const max = 200;
+        const mag = Math.floor(Math.random() * ((min-max)+1) + max);
+        const destVec = angleVec.clone()
+          .multiplyScalar(distance + mag);
 
-  _stopRecording () {
-    this.recorder.stop();
+        const targetX = (destVec.x + elWidth/2) - (domNode.offsetWidth/2);
+        const targetY = (destVec.y + elHeight/2) - (domNode.offsetHeight/2);
+
+        TweenMax.to(domNode, 1, {left:targetX, top:targetY, ease:Elastic.easeOut, onUpdate:()=>{
+          instance.repaintEverything();
+        }});
+
+      })
   }
 
   render () {
     const styles = {
       marginBottom: '20px',
+      marginTop: 300,
       padding: '1em',
-      minWidth: '50%',
-      width: '50%',
-      minHeight: '5em'
+      minHeight: '30vh',
+      position: 'relative',
+
+      '@media (max-width: 1100px)': {
+        width: '60%'
+      },
+
+      '@media (min-width: 1100px)': {
+        width: '40%'
+      },
+
+      '@media (min-width: 1800px)': {
+        width: '30%'
+      }
     };
 
     const aceStyles = {
       width: '100%',
-      height: '100%'
+      height: '100%',
+      zIndex: '100'
     };
 
     const { model: { id } } = this.props;
 
+    const widgets = [];
+    this.widgetRefs = [];
+    const count = Math.floor(Math.random() * ((1-6)+1) + 6);
+    for(let i = 0; i < parseInt(count); i++){
+      let ref = `widget_${i}`;
+      this.widgetRefs.push(ref);
+      let el = (<SoundByte id={i} ref={ref}/>);
+      widgets.push(el);
+    }
+
     return (
-      <div style={styles}>
-        <h4>{id}</h4>
-        <div ref="aceContainer" style={aceStyles}></div>
-        <a className='btn' onClick={::this._startRecording}>Start</a>
-        <a className='btn' onClick={::this._stopRecording}>Stop</a>
+      <div ref='plumbContainer' style={styles}>
+        <div ref='aceContainer' style={aceStyles}></div>
+        {widgets}
       </div>
     );
   }

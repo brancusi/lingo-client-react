@@ -4,3 +4,8 @@
 @import '~bootstrap/scss/bootstrap-flex';
 
 @import 'utils/scroll-bar-reset';
+
+
+.jsplumb-connector {
+  z-index: 1;
+}

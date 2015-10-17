@@ -63,13 +63,14 @@ export default class ScratchPad extends React.Component {
 
   render () {
     const styles = {
-      marginTop: '4em',
+      height: '60%',
       display: 'flex'
     };
 
     const canvasStyles = {
       display: 'flex',
       flex: 1,
+      justifyContent: 'center',
       overflowX:'auto'
     };
 

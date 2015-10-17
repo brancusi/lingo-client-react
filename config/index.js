@@ -22,6 +22,7 @@ config.set('vendor_dependencies', [
   'history',
   'immutable',
   'react',
+  'react-dom',
   'react-redux',
   'react-router',
   'redux',

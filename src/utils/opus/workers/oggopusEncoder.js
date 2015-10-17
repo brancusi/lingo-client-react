@@ -22,7 +22,7 @@ onmessage = function( e ){
       break;
 
     case 'init':
-      encoder = new OggOpusEncoder( e.data );
+      encoder = new OggOpusEncoder( e.data.config );
       break;
   }
 };
