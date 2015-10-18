@@ -13,7 +13,8 @@ export default class Header extends React.Component {
 
   render () {
     const styles = {
-      backgroundColor: '#e3f2fd'
+      backgroundColor: '#e3f2fd',
+      fontFamily: 'sofia-pro-soft, sans-serif',
     };
 
     const { login, logout, auth } = this.props;
@@ -21,7 +22,7 @@ export default class Header extends React.Component {
     return (
       <div className="row">
         <nav className="col-sm-12 navbar navbar-light" style={styles}>
-          <Link to={`/`} className="navbar-brand">Lingo</Link>
+          <Link to={`/`} className="navbar-brand">Say Something Somewhere Somehow</Link>
           <LoginUI login={login} logout={logout} auth={auth}/>
         </nav>
       </div>

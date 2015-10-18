@@ -12,18 +12,25 @@ export default class SoundByte extends React.Component {
   }
 
   render () {
+
+    const age = Math.floor(Math.random() * ((50-100)+1) + 100);
+
     const styles = {
       border: '1px solid red',
       position: 'absolute',
-      minWidth: 100,
-      minHeight: 100,
+      minWidth: age,
+      minHeight: age,
+      marginTop: -age/2,
+      marginLeft: -age/2,
       zIndex: '1000',
-      background: 'white'
+      background: '#FDF9FF',
+      border: '8px solid #DADADA',
+      borderRadius: '50%'
     };
 
     return (
       <div style={styles}>
-        Hello!
+        
       </div>
     );
   }

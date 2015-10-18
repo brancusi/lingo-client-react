@@ -1,10 +1,10 @@
 import React       from 'react';
 import { connect } from 'react-redux';
-import OTStreams from 'components/widgets/ot/OTStreams';
 import ScratchPad from 'components/ScratchPad';
-import Chat from 'components/widgets/chat/Chat';
 import LearningToolbar from 'components/LearningToolbar';
 import LinkShare from 'components/widgets/share/LinkShare';
+import CommunicationHud from 'components/CommunicationHud';
+
 import {
   processScratchPadChildAdded,
   processScratchPadChildRemoved,
@@ -118,33 +118,26 @@ export class SessionView extends React.Component {
   _hasCredentialsFragment () {
     const { session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
 
-    const comStyles = {
-      alignItems: 'flex-end',
-      zIndex: 1000
-    };
-
     const shareLink = `http://localhost:5000/sessions/${guid}`;
+
+    const toolBarStyles = {
+      paddingBottom: 200
+    }
 
     return (
       <div className='stretch flexCol'>
-        <LinkShare link={shareLink} />
         <div className='row stretch' >
           <ScratchPad scratchPad={scratchPad} />
         </div>
-
-        <LearningToolbar createLangit={::this._createNewLangit}/>
-
-        <div className='row' style={comStyles}>
-          <div className='col-sm-6 col-xl-8'>
-            <OTStreams credentials={credentials} />
-          </div>
-          <div className='col-sm-6 col-xl-4'>
-            <Chat sessionChat={sessionChat} addChatMessage={::this._addChatMessage}/>
-          </div>
+        <div style={toolBarStyles}>
+          <LearningToolbar createLangit={::this._createNewLangit}/>
         </div>
+        <CommunicationHud creds={credentials} chat={sessionChat} newChatMessage={::this._addChatMessage} />
       </div>
     );
   }
+
+  // <LearningToolbar createLangit={::this._createNewLangit}/>
 
   _defaultFragment () {
     return (

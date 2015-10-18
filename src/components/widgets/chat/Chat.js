@@ -1,6 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import Message from 'components/widgets/chat/Message';
+import IconButton from 'components/ui/buttons/IconButton';
 
 @Radium
 export default class Chat extends React.Component {
@@ -15,6 +16,19 @@ export default class Chat extends React.Component {
 
   componentDidUpdate () {
     this._scrollBottom();
+    this._syncState();
+  }
+
+  toggle () {
+    this.setState({expanded:! this.state.expanded});
+  }
+
+  _syncState () {
+    if(this.state.expanded){
+      TweenMax.to(this.container, 0.4, {height:400, ease:Expo.easeOut, onComplete:(::this._scrollBottom)});
+    }else{
+      TweenMax.to(this.container, 0.3, {height:130, ease:Expo.easeOut, onComplete:(::this._scrollBottom)});
+    }
   }
 
   _scrollBottom () {
@@ -35,52 +49,75 @@ export default class Chat extends React.Component {
   }
 
   render () {
+
     const { sessionChat } = this.props;
+    const { expanded } = this.state;
 
     const styles = {
+      display: 'flex',
+      flexDirection: 'column',
       backgroundColor: 'white',
-      borderRight: '0.3rem solid #e5e5e5',
-      borderLeft: '0.3rem solid #e5e5e5',
-      borderTop: '0.3rem solid #e5e5e5',
-
-      height: 500,
-      width: '100%',
-      marginTop: -300,
-      padding: '1rem',
-      flexDirection: 'column'
+      height: 300,
+      width: 400,
+      boxShadow: '0px 6px 18px -8px rgba(0,0,0,0.75)',
+      marginRight: 20
     };
 
     const historyStyles = {
-      border: '0.0625rem solid #e5e5e5',
-      backgroundColor: 'white',
-      overflow: 'auto'
+      backgroundColor: '#FFFFF7',
+      padding: '0.5rem 1rem',
+      width: '100%',
+      overflow: 'auto',
+      boxShadow: '0px 6px 24px 0px rgba(158,158,158,0.4)',
+      zIndex: 100,
     };
 
     const inputStyles = {
-      borderRadius: 8,
-      border: '0.4rem solid grey',
+      border: 'none',
       width: '100%',
-      height: '4rem',
+      height: '2rem',
+      marginTop: '0.5rem',
+      marginBottom: '0.5rem',
       padding: '1rem',
-      marginTop: '1rem',
 
       ':focus': {
         outline: 0
       }
     };
 
+    const uiStyled = {
+      position: 'absolute',
+      zIndex: 1,
+    }
+
     const messages = sessionChat
       .map((msg, key) => {
         return (<Message key={key} message={msg} />);
       }).toArray();
 
+    const toggleUiProps = {
+      icon: (expanded) ? 'fa-arrow-down' : 'fa-arrow-up',
+      size:'24',
+      position:{x:370, y:-12},
+      borderRadius:'0',
+      background:'#595959',
+      color:'white',
+      border:'0',
+      overTween:{top:-12},
+      outTween:{top:-10},
+      click:(::this.toggle)
+    };
+
     return (
-      <div className='row' style={styles}>
+      <div ref={node=>this.container = node} style={styles}>
+        <div style={uiStyled}>
+          <IconButton {...toggleUiProps} />
+        </div>
         <div ref='historyContainer' className='stretch' style={historyStyles}>
           {messages}
         </div>
         <form onSubmit={::this._onEnter}>
-          <input value={this.state.msg} ref='chatInput' style={inputStyles} placeholder='start typing' onChange={::this._onPress} />
+          <input value={this.state.msg} ref='chatInput' style={inputStyles} placeholder='start chatting' onChange={::this._onPress} />
         </form>
       </div>
     );

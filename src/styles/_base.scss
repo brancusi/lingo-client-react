@@ -22,3 +22,11 @@
 .powered-by-firepad {
   visibility: hidden;
 }
+
+.jsplumb-connector {
+  z-index: 1;
+  path {
+    stroke: #DADADA;
+    stroke-width: 3;
+  }
+}
