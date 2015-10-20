@@ -7,14 +7,14 @@ import Rx from 'rx';
 @Radium
 export default class LangitToolbar extends React.Component {
   static propTypes = {
-
+    audioFunc: React.PropTypes.func.isRequired
   }
 
   componentDidMount () {
     this.mouseMoves = Rx.Observable.fromEvent(this.domNode, 'mousemove');
 
-    this.mouseMoves
-      .subscribe(e => console.log(e));
+    // this.mouseMoves
+    //   .subscribe(e => console.log(e));
   }
 
   _showToolBar () {
@@ -26,19 +26,17 @@ export default class LangitToolbar extends React.Component {
     this.isHovering = false;
   }
 
-  _newAudio () {
-
-  }
-
   render () {
+    const { audioFunc } = this.props;
+
     const styles = {
       position: 'absolute'
     };
 
     const links = [
-      {icon:'fa-microphone', clicked:this._newAudio},
-      {icon:'fa-i-cursor', clicked:this._newAudio},
-      {icon:'fa-instagram', clicked:this._newAudio}
+      {icon:'fa-microphone', click:audioFunc},
+      {icon:'fa-i-cursor', click:audioFunc},
+      {icon:'fa-instagram', click:audioFunc}
     ];
 
     return (

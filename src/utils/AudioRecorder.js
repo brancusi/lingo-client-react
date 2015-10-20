@@ -4,8 +4,18 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 const OpusEncoderWorker = require("worker!./opus/workers/oggopusEncoder.js");
+const OpusDecoderWorker = require("worker!utils/opus/workers/oggopusDecoder.js");
 
 export default class AudioRecorder {
+
+  static getInstance ( config ) {
+    if(!this.instance){
+      this.instance = new AudioRecorder(config);
+      this.instance.initialize();
+    }
+
+    return this.instance;
+  }
 
   constructor ( config = {} ) {
     this.audioContext = new window.AudioContext();
@@ -38,16 +48,21 @@ export default class AudioRecorder {
   }
 
   _createRxStreams () {
-    this.recordings = new Rx.Subject();
-    this.states = new Rx.Subject();
+    this.recordingsSubject = new Rx.Subject();
+    this.recordings = this.recordingsSubject.publish();
+    this.recordings.connect();
+
+    this.statesSubject = new Rx.Subject();
+    this.states = this.statesSubject.publish();
+    this.states.connect();
   }
 
   _dispatchState ( state ) {
-    this.states.onNext(state);
+    this.statesSubject.onNext(state);
   }
 
   _dispatchRecording ( blob ) {
-    this.recordings.onNext(blob);
+    this.recordingsSubject.onNext(blob);
   }
 
   clearStream () {
@@ -184,6 +199,65 @@ export default class AudioRecorder {
 
       this._dispatchState('completed');
     }
+  }
+
+  /**
+   * Create a buffer source from an ogg blob
+   * @param {Blob} The ogg blob created by recorderjs
+   * @param {Integer} Numbers of channels, defaults to 2
+   * @returns {Promise, Object} A promise that will resolve with an object containing
+   * {node:AudioBufferSourceNode, buffer:AudioBuffer}
+   */
+  createBufferSource ( blob, channels = 2 ) {
+    return new Promise((res, rej) => {
+      const decoder = new OpusDecoderWorker();
+      const buffers = [];
+      const config = {
+        outputBufferSampleRate : this.audioContext.sampleRate,
+        bufferLength : this.config.bufferLength
+      }
+
+      decoder.onmessage = e => {
+        if (e.data === null) {
+
+          const frameCount = buffers.length * config.bufferLength;
+          const audioBuffer = this.audioContext.createBuffer(channels, frameCount, this.audioContext.sampleRate);
+
+          // Fill the channel data
+          for (let channel = 0; channel < channels; channel++) {
+            var channgelBuffer = audioBuffer.getChannelData(channel);
+            buffers
+              .map((buffer, i) => {
+                (buffer[channel] || buffer[0])
+                  .forEach((frame, j) => {
+                    channgelBuffer[(i*config.bufferLength)+j] = frame;
+                  });
+              });
+          }
+
+          const source = this.audioContext.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(this.audioContext.destination);
+
+          // Resolve the promise
+          res({node:source, buffer:audioBuffer});
+        } else {
+          buffers.push(e.data);
+        }
+      };
+
+      // Initialize the decoder
+      decoder.postMessage({ command: 'init', config: config });
+
+      // Load blob
+      const reader = new FileReader();
+      reader.onload = e => {
+        decoder.postMessage({ command: 'decode', pages: new Uint8Array(reader.result)});
+        decoder.postMessage({ command: 'done' });
+      };
+      reader.readAsArrayBuffer(blob);
+
+    });
   }
 
 }

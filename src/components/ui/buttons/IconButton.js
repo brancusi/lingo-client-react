@@ -1,19 +1,44 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Radium from 'radium';
 
 @Radium
 export default class IconButton extends React.Component {
   static propTypes = {
-    icon: React.PropTypes.string.isRequired,
-    size: React.PropTypes.string.isRequired,
-    border: React.PropTypes.string,
-    borderRadius: React.PropTypes.string,
-    position: React.PropTypes.object,
-    over: React.PropTypes.func,
-    out: React.PropTypes.func,
-    click: React.PropTypes.func,
-    overTween: React.PropTypes.object,
-    outTween: React.PropTypes.object
+    icon: PropTypes.string.isRequired,
+    size: PropTypes.string.isRequired,
+    border: PropTypes.string,
+    borderRadius: PropTypes.string,
+    position: PropTypes.object,
+    over: PropTypes.func,
+    out: PropTypes.func,
+    click: PropTypes.func,
+    overTween: PropTypes.object,
+    outTween: PropTypes.object,
+    disabled: PropTypes.bool,
+    loading: PropTypes.bool
+  }
+
+  componentDidMount () {
+    this._animateState();
+  }
+
+  componentDidUpdate () {
+    this._animateState();
+  }
+
+  _animateState () {
+    const { loading, disabled } = this.props;
+    if(loading) {
+      TweenMax.to(this.iconNode, 0.5, {rotation:360, repeat:-1});
+    }else{
+      TweenMax.to(this.iconNode, 0.25, {rotation:0});
+    }
+
+    if(disabled) {
+      TweenMax.to(this.domNode, 0.25, {opacity:0.25});
+    }else{
+      TweenMax.to(this.domNode, 0.25, {opacity:1});
+    }
   }
 
   _mouseOver () {
@@ -42,7 +67,8 @@ export default class IconButton extends React.Component {
       background = '#F4F9FF',
       color = '#929292',
       borderRadius = '50%',
-      border = '2px solid #A7A7A7'
+      border = '2px solid #A7A7A7',
+      loading = false
     } = this.props;
 
     const x = position ? position.x : 0;
@@ -63,12 +89,15 @@ export default class IconButton extends React.Component {
       display: 'flex',
       fontSize: (size/2)-2,
       left: x,
-      top: y
+      top: y,
+      cursor: 'pointer'
     };
 
     const iconStyles = {
       pointerEvents:'none'
     };
+
+    const finalIcon = loading ? 'fa-spinner' : icon;
 
     return (
       <div
@@ -78,7 +107,7 @@ export default class IconButton extends React.Component {
         onMouseOut={::this._mouseOut}
         onClick={::this._clicked}>
 
-        <i className={`fa ${icon}`} style={iconStyles}></i>
+        <i ref={node => this.iconNode = node} className={`fa ${finalIcon}`} style={iconStyles}></i>
       </div>
     );
   }

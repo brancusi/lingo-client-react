@@ -2,6 +2,7 @@ import React from 'react';
 import Radium from 'radium';
 import Message from 'components/widgets/chat/Message';
 import IconButton from 'components/ui/buttons/IconButton';
+import { Map } from 'immutable';
 
 @Radium
 export default class Chat extends React.Component {
@@ -10,34 +11,50 @@ export default class Chat extends React.Component {
     addChatMessage: React.PropTypes.func.isRequired
   }
 
-  componentDidMount () {
-    this._scrollBottom();
+  constructor(props) {
+    super(props);
+    this.state = {expanded: false, msg:''};
   }
 
-  componentDidUpdate () {
+  componentDidMount () {
     this._scrollBottom();
-    this._syncState();
+    this._syncToggle();
+  }
+
+  componentWillUpdate (prevProps, prevState) {
+    const propsChanged = !prevProps.sessionChat.equals(this.props.sessionChat);
+    const toggleChanged = prevState.expanded !== this.state.expanded;
+    if (toggleChanged) {
+      this._syncToggle();
+    }
+
+    if (propsChanged) {
+      this._scrollBottom();
+    }
+
   }
 
   toggle () {
-    this.setState({expanded:! this.state.expanded});
+    this.setState({expanded:!this.state.expanded});
   }
 
-  _syncState () {
+  _syncToggle () {
     if(this.state.expanded){
-      TweenMax.to(this.container, 0.4, {height:400, ease:Expo.easeOut, onComplete:(::this._scrollBottom)});
+      TweenMax.to(this.container, 0.4, {height:400, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
     }else{
-      TweenMax.to(this.container, 0.3, {height:130, ease:Expo.easeOut, onComplete:(::this._scrollBottom)});
+      TweenMax.to(this.container, 0.3, {height:130, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
     }
   }
 
   _scrollBottom () {
+
     const { historyContainer } = this.refs;
     historyContainer.scrollTop = historyContainer.scrollHeight;
   }
 
   _onEnter (e) {
     const { chatInput } = this.refs;
+
     e.preventDefault();
     this.props.addChatMessage(chatInput.value);
     this.setState({msg:''});
@@ -49,9 +66,8 @@ export default class Chat extends React.Component {
   }
 
   render () {
-
     const { sessionChat } = this.props;
-    const { expanded } = this.state;
+    const { expanded, msg } = this.state;
 
     const styles = {
       display: 'flex',
@@ -96,7 +112,7 @@ export default class Chat extends React.Component {
       }).toArray();
 
     const toggleUiProps = {
-      icon: (expanded) ? 'fa-arrow-down' : 'fa-arrow-up',
+      icon: (expanded) ? 'fa-arrow-up' : 'fa-arrow-down',
       size:'24',
       position:{x:370, y:-12},
       borderRadius:'0',
@@ -117,7 +133,7 @@ export default class Chat extends React.Component {
           {messages}
         </div>
         <form onSubmit={::this._onEnter}>
-          <input value={this.state.msg} ref='chatInput' style={inputStyles} placeholder='start chatting' onChange={::this._onPress} />
+          <input value={msg} ref='chatInput' style={inputStyles} placeholder='Type chat message...' onChange={::this._onPress} />
         </form>
       </div>
     );

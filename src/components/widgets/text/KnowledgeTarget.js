@@ -6,7 +6,8 @@ import LangitToolbar from 'components/ui/toolbars/LangitToolbar';
 @Radium
 export default class KnowledgeTarget extends React.Component {
   static propTypes = {
-    langitId: React.PropTypes.string.isRequired
+    langitId: React.PropTypes.string.isRequired,
+    audioFunc: React.PropTypes.func.isRequired
   }
 
   componentDidMount () {
@@ -40,6 +41,8 @@ export default class KnowledgeTarget extends React.Component {
   }
 
   render () {
+    const { audioFunc } = this.props;
+
     const styles = {
 
       '@media (max-width: 1100px)': {
@@ -82,7 +85,7 @@ export default class KnowledgeTarget extends React.Component {
       <div style={styles}>
         <div ref='aceContainer' style={aceStyles}></div>
         <div ref='toolBarContainer' style={toolBarContainerStyles}>
-          <LangitToolbar/>
+          <LangitToolbar audioFunc={audioFunc}/>
         </div>
       </div>
     );

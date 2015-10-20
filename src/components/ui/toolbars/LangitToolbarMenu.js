@@ -38,7 +38,7 @@ export default class LangitToolbarMenu extends React.Component {
           .normalize()
           .multiplyScalar(50);
 
-        return (<IconButton key={`menuItem_${i}`} icon={link.icon} size='32' position={point}/>)
+        return (<IconButton key={`menuItem_${i}`} click={link.click} icon={link.icon} size='32' position={point}/>)
       })
 
     return (

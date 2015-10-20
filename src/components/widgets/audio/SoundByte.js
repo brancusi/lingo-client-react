@@ -8,7 +8,7 @@ export default class SoundByte extends React.Component {
   }
 
   componentDidMount () {
-
+    
   }
 
   render () {
@@ -30,7 +30,7 @@ export default class SoundByte extends React.Component {
 
     return (
       <div style={styles}>
-        
+
       </div>
     );
   }
