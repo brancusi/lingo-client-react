@@ -5,7 +5,9 @@ import Langit from 'components/Langit';
 @Radium
 export default class ScratchPad extends React.Component {
   static propTypes = {
-    scratchPad: React.PropTypes.object.isRequired
+    scratchPad: React.PropTypes.object.isRequired,
+    saveRecording: React.PropTypes.func.isRequired,
+    dispatch: React.PropTypes.func.isRequired
   }
 
   componentDidMount () {
@@ -28,6 +30,7 @@ export default class ScratchPad extends React.Component {
 
   _setupPanning () {
     const { canvas } = this.refs;
+
     const hammer = new Hammer(canvas, { direction: Hammer.DIRECTION_ALL, threshold: 0 });
 
     const panStarts = Rx.Observable.fromEventPattern(
@@ -73,11 +76,11 @@ export default class ScratchPad extends React.Component {
       overflowX:'auto'
     };
 
-    const { scratchPad } = this.props;
+    const { scratchPad, saveRecording, dispatch } = this.props;
 
     const itemList = scratchPad
       .sort((a, b) => a.t - b.t)
-      .map(item=>(<Langit key={item.id} model={item}/>))
+      .map(item=>(<Langit saveRecording={saveRecording} key={item.id} model={item} dispatch={dispatch}/>))
       .toArray();
 
     return (

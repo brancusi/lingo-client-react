@@ -13,23 +13,55 @@ import Victor from 'victor';
 
 import { aabbLine } from 'utils/geom';
 
+import {
+  uploadAudio,
+  processWidgetData
+} from 'actions/langit';
+
 @Radium
 export default class Langit extends React.Component {
   static propTypes = {
-    model: React.PropTypes.object.isRequired
+    model: React.PropTypes.object.isRequired,
+    saveRecording: React.PropTypes.func.isRequired
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {showAudioRecorder: false};
   }
 
   componentDidMount () {
     this._createPlubInstance();
     this._positionElements();
+    this._addFBListeners
   }
 
-  componentDidUpdate () {
+  _addFBListeners () {
+      const { dispatch, model: { id } } = this.props;
+      const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+      this.fbChatRef = new Firebase(`${baseFBUrl}langits/${id}/widgets`);
+      this.fbChatRef.on('value', snapShot => dispatch(processWidgetData(snapShot.val())));
+  }
+
+  componentDidUpdate (prevProps, prevState) {
     this._positionElements();
+
+    const showAudioRecorderChanged = prevState.showAudioRecorder !== this.state.showAudioRecorder;
+    if(showAudioRecorderChanged)this._syncAudioRecorderState();
   }
 
-  _showAudioRecorder () {
-    this.setState({showAudioRecorder:true});
+  _toggleAudioRecorder () {
+    this.setState({showAudioRecorder:!this.state.showAudioRecorder});
+  }
+
+  _saveRecording ( recording ) {
+    const { saveRecording, model } = this.props;
+    saveRecording(model, recording);
+    this.setState({showAudioRecorder:false});
+  }
+
+  _cancelRecording () {
+    this.setState({showAudioRecorder:false});
   }
 
   _createPlubInstance () {
@@ -89,12 +121,34 @@ export default class Langit extends React.Component {
         }});
 
       });
+  }
 
-      if (showAudioRecorder) {
-        const arWidth = this.audioRecorderContainer.offsetWidth;
-        console.log('arWidth', arWidth, this.audioRecorderContainer);
-        TweenMax.to(this.audioRecorderContainer, 1, {left:centerX-arWidth/2, top:centerY+elHeight/2 + 20, ease:Expo.easeOut});
-      }
+  _syncAudioRecorderState () {
+    const { showAudioRecorder } = this.state;
+
+    if (showAudioRecorder) {
+
+      const { knowledgeTarget } = this.refs;
+      const targetDomNode = ReactDOM.findDOMNode(knowledgeTarget);
+
+      const elWidth = targetDomNode.offsetWidth;
+      const elHeight = targetDomNode.offsetHeight;
+      const elX = targetDomNode.offsetLeft;
+      const elY = targetDomNode.offsetTop;
+      const centerX = elX + elWidth/2;
+      const centerY = elY + elHeight/2;
+
+      const arWidth = this.audioRecorderContainer.offsetWidth;
+      const arHeight = this.audioRecorderContainer.offsetHeight;
+      TweenMax.to(this.audioRecorderContainer, 0.25, {
+        startAt: {
+          top:centerY-arHeight/2,
+          left:centerX-arWidth/2
+        },
+        left:centerX-arWidth/2,
+        top:centerY+elHeight/2 + 20,
+        ease:Expo.easeOut});
+    }
   }
 
   _buildWidgets () {
@@ -111,16 +165,18 @@ export default class Langit extends React.Component {
     return widgets;
   }
 
-  _renderAudioRecorder () {
+  _renderAudioRecorder (position) {
+
     const { showAudioRecorder } = this.state;
-    const audioRecorderStyles = {
+
+    const audioRecorderContainerStyles = {
       position: 'absolute'
     }
 
     if (showAudioRecorder) {
         return (
-          <div ref={node=>this.audioRecorderContainer = node} style={audioRecorderStyles}>
-            <AudioRecorder />
+          <div ref={node=>this.audioRecorderContainer = node} style={audioRecorderContainerStyles}>
+            <AudioRecorder save={::this._saveRecording} cancel={::this._cancelRecording} />
           </div>
         );
     } else {
@@ -141,7 +197,7 @@ export default class Langit extends React.Component {
     return (
       <div ref='plumbContainer' style={styles}>
         {this._renderAudioRecorder()}
-        <KnowledgeTarget ref='knowledgeTarget' langitId={id} audioFunc={::this._showAudioRecorder} />
+        <KnowledgeTarget ref='knowledgeTarget' langitId={id} audioFunc={::this._toggleAudioRecorder} />
         {this._buildWidgets()}
       </div>
     );

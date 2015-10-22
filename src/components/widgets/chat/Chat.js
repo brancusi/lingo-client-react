@@ -21,9 +21,9 @@ export default class Chat extends React.Component {
     this._syncToggle();
   }
 
-  componentWillUpdate (prevProps, prevState) {
-    const propsChanged = !prevProps.sessionChat.equals(this.props.sessionChat);
-    const toggleChanged = prevState.expanded !== this.state.expanded;
+  componentDidUpdate (nextProps, nextState) {
+    const propsChanged = !nextProps.sessionChat.equals(this.props.sessionChat);
+    const toggleChanged = nextState.expanded !== this.state.expanded;
     if (toggleChanged) {
       this._syncToggle();
     }
@@ -70,6 +70,7 @@ export default class Chat extends React.Component {
     const { expanded, msg } = this.state;
 
     const styles = {
+      position: 'relative',
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: 'white',
@@ -101,9 +102,11 @@ export default class Chat extends React.Component {
       }
     };
 
-    const uiStyled = {
+    const uiStylesContainer = {
       position: 'absolute',
-      zIndex: 1,
+      left: 370,
+      top:-22,
+      zIndex: 1
     }
 
     const messages = sessionChat
@@ -112,21 +115,20 @@ export default class Chat extends React.Component {
       }).toArray();
 
     const toggleUiProps = {
-      icon: (expanded) ? 'fa-arrow-up' : 'fa-arrow-down',
-      size:'24',
-      position:{x:370, y:-12},
+      icon: (expanded) ? 'fa-arrow-down' : 'fa-arrow-up',
+      size:24,
       borderRadius:'0',
       background:'#595959',
       color:'white',
       border:'0',
-      overTween:{top:-12},
-      outTween:{top:-10},
+      overTween:{y:'-=2'},
+      outTween:{y:0},
       click:(::this.toggle)
     };
 
     return (
       <div ref={node=>this.container = node} style={styles}>
-        <div style={uiStyled}>
+        <div style={uiStylesContainer}>
           <IconButton {...toggleUiProps} />
         </div>
         <div ref='historyContainer' className='stretch' style={historyStyles}>

@@ -77,8 +77,8 @@ export default class KnowledgeTarget extends React.Component {
     const toolBarContainerStyles = {
       position: 'relative',
       left: '100%',
-      marginLeft: 50,
-      top: 80
+      marginLeft: 40,
+      top: 70
     }
 
     return (

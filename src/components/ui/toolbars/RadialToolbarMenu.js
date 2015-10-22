@@ -4,7 +4,7 @@ import Victor from 'victor';
 import IconButton from 'components/ui/buttons/IconButton';
 
 @Radium
-export default class LangitToolbarMenu extends React.Component {
+export default class RadialToolbarMenu extends React.Component {
   static propTypes = {
     links: React.PropTypes.array.isRequired,
   }
@@ -38,8 +38,18 @@ export default class LangitToolbarMenu extends React.Component {
           .normalize()
           .multiplyScalar(50);
 
-        return (<IconButton key={`menuItem_${i}`} click={link.click} icon={link.icon} size='32' position={point}/>)
-      })
+        const containerStyles = {
+          position: 'absolute',
+          left: point.x,
+          top: point.y
+        };
+
+        return (
+          <div key={`menuItem_${i}`} style={containerStyles}>
+            <IconButton click={link.click} icon={link.icon} size={32} />
+          </div>
+        );
+      });
 
     return (
       <div ref={node => this.domNode = node} style={styles}>

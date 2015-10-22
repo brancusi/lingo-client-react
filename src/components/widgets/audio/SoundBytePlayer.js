@@ -6,7 +6,8 @@ import AudioRecorder from 'utils/AudioRecorder';
 @Radium
 export default class SoundBytePlayer extends React.Component {
   static propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    size: PropTypes.number
   }
 
   constructor(props) {
@@ -38,9 +39,10 @@ export default class SoundBytePlayer extends React.Component {
   }
 
   _checkUpdate (prevProps = {}) {
-    const { data = {}} = this.props;
+    const { data = {} } = this.props;
     const prevData = prevProps.data || {};
 
+    console.log('hey', data, prevData);
     if (data.guid !== prevData.guid) {
       this._updateSound(data);
     }
@@ -88,12 +90,14 @@ export default class SoundBytePlayer extends React.Component {
 
   render () {
     const { playing, loading, hasRecording } = this.state;
+    const { size } = this.props;
 
     const disabled = !hasRecording;
 
     const uiProps = {
       icon: (playing) ? 'fa-stop' : 'fa-play',
-      size:'24',
+      iconOffset: (playing) ? {x:0, y:0} : {x:5, y:0},
+      size:size,
       background:'#595959',
       color:'white',
       border:'0',
@@ -101,6 +105,8 @@ export default class SoundBytePlayer extends React.Component {
       disabled: disabled,
       loading: loading
     };
+
+    console.log('uiProps', uiProps);
 
     return (
       <div>

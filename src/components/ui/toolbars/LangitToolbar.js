@@ -1,7 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import IconButton from 'components/ui/buttons/IconButton';
-import MenuItems from 'components/ui/toolbars/LangitToolbarMenu';
+import MenuItems from 'components/ui/toolbars/RadialToolbarMenu';
 import Rx from 'rx';
 
 @Radium
@@ -41,7 +41,7 @@ export default class LangitToolbar extends React.Component {
 
     return (
       <div ref={node=>this.domNode = node} style={styles}>
-        <IconButton icon='fa-plus' size='24' over={::this._showToolBar} />
+        <IconButton icon='fa-plus' size={24} over={::this._showToolBar} />
         <MenuItems links={links} ref={comp => this.menuItems = comp} />
       </div>
     );

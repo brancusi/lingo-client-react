@@ -116,6 +116,7 @@ export function processProfileData (identityProviderData, auth0Data) {
   };
 }
 
+
 /*
 export function processAuth0Data (data) {
 

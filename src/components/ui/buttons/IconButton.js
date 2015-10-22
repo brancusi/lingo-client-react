@@ -5,17 +5,17 @@ import Radium from 'radium';
 export default class IconButton extends React.Component {
   static propTypes = {
     icon: PropTypes.string.isRequired,
-    size: PropTypes.string.isRequired,
+    size: PropTypes.number.isRequired,
     border: PropTypes.string,
     borderRadius: PropTypes.string,
-    position: PropTypes.object,
     over: PropTypes.func,
     out: PropTypes.func,
     click: PropTypes.func,
     overTween: PropTypes.object,
     outTween: PropTypes.object,
     disabled: PropTypes.bool,
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    iconOffset: PropTypes.object
   }
 
   componentDidMount () {
@@ -63,21 +63,15 @@ export default class IconButton extends React.Component {
     const {
       icon,
       size,
-      position,
       background = '#F4F9FF',
       color = '#929292',
       borderRadius = '50%',
       border = '2px solid #A7A7A7',
-      loading = false
+      loading = false,
+      iconOffset = {x:0, y:0}
     } = this.props;
 
-    const x = position ? position.x : 0;
-    const y = position ? position.y : 0;
-
     const styles = {
-      marginLeft: -size/2,
-      marginTop: -size/2,
-      position: 'absolute',
       border: border,
       borderRadius: borderRadius,
       background: background,
@@ -88,13 +82,13 @@ export default class IconButton extends React.Component {
       alignItems: 'center',
       display: 'flex',
       fontSize: (size/2)-2,
-      left: x,
-      top: y,
       cursor: 'pointer'
     };
 
     const iconStyles = {
-      pointerEvents:'none'
+      pointerEvents:'none',
+      marginLeft: iconOffset.x,
+      marginTop: iconOffset.y
     };
 
     const finalIcon = loading ? 'fa-spinner' : icon;

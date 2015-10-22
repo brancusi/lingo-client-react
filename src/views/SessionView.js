@@ -14,6 +14,10 @@ import {
   proccessChatHistory
 } from 'actions/session';
 
+import {
+  uploadAudio
+} from 'actions/langit';
+
 import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3.js';
 
 const mapStateToProps = (state) => {
@@ -75,6 +79,11 @@ export class SessionView extends React.Component {
     dispatch(createLangit(sessionId));
   }
 
+  _saveRecording (langit, recording) {
+    const { dispatch, session : { credentials : { sessionId } } } = this.props;
+    dispatch(uploadAudio(sessionId, langit.id, recording));
+  }
+
   _addChatMessage (msg) {
     const {
       dispatch,
@@ -116,7 +125,7 @@ export class SessionView extends React.Component {
   }
 
   _hasCredentialsFragment () {
-    const { session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
+    const { dispatch, session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
 
     const shareLink = `http://localhost:5000/sessions/${guid}`;
 
@@ -127,7 +136,7 @@ export class SessionView extends React.Component {
     return (
       <div className='stretch flexCol'>
         <div className='row stretch' >
-          <ScratchPad scratchPad={scratchPad} />
+          <ScratchPad scratchPad={scratchPad} saveRecording={::this._saveRecording} dispatch={dispatch}/>
         </div>
         <div style={toolBarStyles}>
           <LearningToolbar createLangit={::this._createNewLangit}/>

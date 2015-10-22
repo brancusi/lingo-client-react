@@ -12,12 +12,13 @@ const HEIGHT = 85;
 @Radium
 export default class AudioRecorder extends React.Component {
   static propTypes = {
-
+    save: React.PropTypes.func.isRequired,
+    cancel: React.PropTypes.func.isRequired
   }
 
   constructor(props) {
     super(props);
-    this.state = {recording: false};
+    this.state = { recording: false, stashedRecording: undefined };
   }
 
   componentDidMount () {
@@ -53,17 +54,28 @@ export default class AudioRecorder extends React.Component {
     this.recorder.stop();
   }
 
-  _recordingUI () {
-    const { recording } = this.state;
+  _okClickedHandler () {
+    const { save } = this.props;
+    const { stashedRecording } = this.state;
+    save(stashedRecording);
+  }
 
+  _audioUI () {
+    const { recording, stashedRecording } = this.state;
+
+    const SIZE = 40;
     const recordUIContainerStyles = {
       position: 'absolute',
-      left: 30,
-      top: HEIGHT/2
+      width: WIDTH,
+      height: HEIGHT,
+      padding: '0 20px',
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between'
     }
 
     const recordingUIProps = {
-      size:'40',
+      size:SIZE,
       background:'#565656',
       border:'0',
       color:'white',
@@ -74,38 +86,60 @@ export default class AudioRecorder extends React.Component {
     return (
       <div ref={node=>this.recordUIContainer = node} style={recordUIContainerStyles}>
         <IconButton {...recordingUIProps} />
+        <SoundBytePlayer data={stashedRecording} size={SIZE} />
       </div>
     );
   }
 
   _okCancelUI () {
-    const { recording } = this.state;
+    const { recording, stashedRecording } = this.state;
+    const { cancel } = this.props;
 
-    const recordUIContainerStyles = {
+    const hasRecording = stashedRecording !== undefined;
+    const disabled = recording || !hasRecording;
+
+    const styles = {
       position: 'absolute',
-      left: 30,
-      top: HEIGHT/2
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
+      top: HEIGHT-14,
+      left: 26,
+      width: '100%'
     }
 
-    const recordingUIProps = {
-      size:'40',
-      background:'#565656',
-      border:'0',
-      color:'white',
-      icon: (recording) ? 'fa-stop' : 'fa-microphone',
-      click:(::this._toggleRecording)
+    const iconContainerStyles = {
+      paddingLeft: 7
+    }
+
+    const okProps = {
+      size:40,
+      icon: 'fa-check',
+      color: '#3176FF',
+      click:(::this._okClickedHandler),
+      disabled: disabled
+    };
+
+    const cancelProps = {
+      size:20,
+      icon: 'fa-times',
+      color: '#FF8080',
+      click:cancel
     };
 
     return (
-      <div ref={node=>this.recordUIContainer = node} style={recordUIContainerStyles}>
-        <IconButton {...recordingUIProps} />
+      <div ref={node=>this.okCancelContainer = node} style={styles}>
+        <div style={iconContainerStyles}>
+          <IconButton {...cancelProps} />
+        </div>
+        <div style={iconContainerStyles}>
+          <IconButton {...okProps} />
+        </div>
       </div>
     );
   }
 
   render () {
-    const { stashedRecording } = this.state;
-
     const styles = {
       border: '1px solid #C4C4C4',
       position: 'relative',
@@ -117,8 +151,8 @@ export default class AudioRecorder extends React.Component {
 
     return (
       <div style={styles}>
-        {this._recordingUI()}
-        <SoundBytePlayer data={stashedRecording} />
+        {this._audioUI()}
+        {this._okCancelUI()}
       </div>
     );
   }
