@@ -42,7 +42,6 @@ export default class SoundBytePlayer extends React.Component {
     const { data = {} } = this.props;
     const prevData = prevProps.data || {};
 
-    console.log('hey', data, prevData);
     if (data.guid !== prevData.guid) {
       this._updateSound(data);
     }
@@ -50,7 +49,7 @@ export default class SoundBytePlayer extends React.Component {
 
   _updateSound (data) {
     const { guid, blob } = data;
-
+    
     if (blob !== undefined) {
       this.audioBuffer = null;
       this.setState({loading:true, hasRecording:false});
@@ -105,8 +104,6 @@ export default class SoundBytePlayer extends React.Component {
       disabled: disabled,
       loading: loading
     };
-
-    console.log('uiProps', uiProps);
 
     return (
       <div>

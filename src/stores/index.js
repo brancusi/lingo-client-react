@@ -1,23 +1,25 @@
-import { compose, createStore, applyMiddleware } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
+import rootReducer  from '../reducers';
 import { devTools } from 'redux-devtools';
-import rootReducer from 'reducers';
-import thunk from 'redux-thunk';
+import thunk        from 'redux-thunk';
+import routes       from '../routes';
+import { reduxReactRouter } from 'redux-router';
+import createHistory from 'history/lib/createBrowserHistory';
 
-const middleware = [thunk];
-let createStoreWithMiddleware;
+export default function configureStore (initialState, debug = false) {
+  let createStoreWithMiddleware;
 
-if (__DEBUG__) {
-  createStoreWithMiddleware = compose(
-    applyMiddleware(...middleware),
-    devTools()
-  )(createStore);
-} else {
-  createStoreWithMiddleware = applyMiddleware(...middleware)(createStore);
-}
+  const middleware = applyMiddleware(thunk);
 
-export default function configureStore (initialState) {
-  const store = createStoreWithMiddleware(rootReducer, initialState);
+  if (debug) {
+    createStoreWithMiddleware = compose(middleware, reduxReactRouter({ routes, createHistory }), devTools());
+  } else {
+    createStoreWithMiddleware = compose(middleware, reduxReactRouter({ routes, createHistory }));
+  }
 
+  const store = createStoreWithMiddleware(createStore)(
+    rootReducer, initialState
+  );
   if (module.hot) {
     module.hot.accept('../reducers', () => {
       const nextRootReducer = require('../reducers/index');

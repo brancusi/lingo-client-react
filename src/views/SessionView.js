@@ -23,7 +23,8 @@ import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/j
 const mapStateToProps = (state) => {
   return {
     session : state.session,
-    auth : state.auth
+    auth : state.auth,
+    langits: state.langits
   };
 };
 
@@ -32,6 +33,7 @@ export class SessionView extends React.Component {
     dispatch : React.PropTypes.func,
     session  : React.PropTypes.object,
     auth     : React.PropTypes.object,
+    langits  : React.PropTypes.object,
     params   : React.PropTypes.object
   };
 
@@ -39,14 +41,14 @@ export class SessionView extends React.Component {
     this._joinSession();
   }
 
-  shouldComponentUpdate (nextProps) {
-    const { session } = this.props;
-    if (session) {
-      return !session.equals(nextProps.session);
-    } else {
-      return true;
-    }
-  }
+  // shouldComponentUpdate (nextProps) {
+  //   const { session } = this.props;
+  //   if (session) {
+  //     return !session.equals(nextProps.session);
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
   componentDidUpdate () {
     if (!this._listeningToFB) {
@@ -79,9 +81,9 @@ export class SessionView extends React.Component {
     dispatch(createLangit(sessionId));
   }
 
-  _saveRecording (langit, recording) {
+  _saveRecording (langitId, recording) {
     const { dispatch, session : { credentials : { sessionId } } } = this.props;
-    dispatch(uploadAudio(sessionId, langit.id, recording));
+    dispatch(uploadAudio(sessionId, langitId, recording));
   }
 
   _addChatMessage (msg) {
@@ -125,18 +127,18 @@ export class SessionView extends React.Component {
   }
 
   _hasCredentialsFragment () {
-    const { dispatch, session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
+    const { dispatch, langits, session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
 
     const shareLink = `http://localhost:5000/sessions/${guid}`;
 
     const toolBarStyles = {
       paddingBottom: 200
     }
-
+    
     return (
       <div className='stretch flexCol'>
         <div className='row stretch' >
-          <ScratchPad scratchPad={scratchPad} saveRecording={::this._saveRecording} dispatch={dispatch}/>
+          <ScratchPad scratchPad={scratchPad} langits={langits} saveRecording={::this._saveRecording} dispatch={dispatch}/>
         </div>
         <div style={toolBarStyles}>
           <LearningToolbar createLangit={::this._createNewLangit}/>

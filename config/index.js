@@ -14,25 +14,23 @@ const config = new Map();
 config.set('dir_src',  'src');
 config.set('dir_dist', 'dist');
 
-config.set('server_host',  'localhost');
-config.set('server_port',  process.env.PORT || 4000);
+config.set('webpack_host',  'localhost');
 config.set('webpack_port', 5000);
 
 config.set('vendor_dependencies', [
   'history',
-  'immutable',
   'react',
   'react-dom',
   'react-redux',
   'react-router',
   'redux',
+  'redux-router',
   'redux-devtools',
   'redux-devtools/lib/react',
   'isomorphic-fetch',
   'radium'
 ]);
 
-config.set('webpack_lint_in_dev', true);
 
 /*  *********************************************
 -------------------------------------------------
@@ -61,7 +59,7 @@ config.set('globals', {
 // Webpack
 // ------------------------------------
 config.set('webpack_public_path',
-  `http://${config.get('server_host')}:${config.get('webpack_port')}/`
+   `http://${config.get('webpack_host')}:${config.get('webpack_port')}/`
 );
 
 // ------------------------------------
@@ -91,13 +89,10 @@ config.set('utils_aliases', [
   'components',
   'constants',
   'containers',
-  'dispatchers',
   'layouts',
-  'models',
   'reducers',
   'routes',
   'services',
-  'stores',
   'styles',
   'utils',
   'views'

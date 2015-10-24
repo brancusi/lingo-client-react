@@ -1,53 +1,61 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import Radium from 'radium';
 import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3-min.js';
-
 import SoundByte from 'components/widgets/audio/SoundByte';
 import AudioRecorder from 'components/widgets/audio/AudioRecorder';
-
 import KnowledgeTarget from 'components/widgets/text/KnowledgeTarget';
-
 import Victor from 'victor';
-
 import { aabbLine } from 'utils/geom';
-
 import {
   uploadAudio,
   processWidgetData
 } from 'actions/langit';
+import { fromJS, List } from 'immutable';
 
 @Radium
 export default class Langit extends React.Component {
   static propTypes = {
-    model: React.PropTypes.object.isRequired,
+    id: React.PropTypes.string.isRequired,
+    model: React.PropTypes.object,
     saveRecording: React.PropTypes.func.isRequired
   }
 
   constructor(props) {
     super(props);
+    this.widgetRefs = new List();
     this.state = {showAudioRecorder: false};
   }
 
   componentDidMount () {
     this._createPlubInstance();
     this._positionElements();
-    this._addFBListeners
+    this._addFBListeners();
   }
 
-  _addFBListeners () {
-      const { dispatch, model: { id } } = this.props;
-      const baseFBUrl = 'https://lingoapp.firebaseio.com/';
-      this.fbChatRef = new Firebase(`${baseFBUrl}langits/${id}/widgets`);
-      this.fbChatRef.on('value', snapShot => dispatch(processWidgetData(snapShot.val())));
+  shouldComponentUpdate (nextProps, nextState) {
+    console.log('Should update');
+    return this._hasChanged(this.props, nextProps) || this._hasChanged(this.state, nextState);
   }
 
   componentDidUpdate (prevProps, prevState) {
-    this._positionElements();
+    console.log('Did update', this._hasChanged(this.props, prevProps));
+    if(this._hasChanged(this.props, prevProps))this._positionElements();
+    if(this._hasChanged(this.state, prevState))this._syncAudioRecorderState();
+  }
 
-    const showAudioRecorderChanged = prevState.showAudioRecorder !== this.state.showAudioRecorder;
-    if(showAudioRecorderChanged)this._syncAudioRecorderState();
+  _hasChanged (obj, against) {
+    return !fromJS(this.props).equals(fromJS(against));
+  }
+
+  _addFBListeners () {
+    const { dispatch, id } = this.props;
+    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+    const langitUrl = `${baseFBUrl}langits/${id}/widgets`;
+    this.fbChatRef = new Firebase(langitUrl);
+    this.fbChatRef.on('value', snapShot => {
+      dispatch(processWidgetData({id, widgets:snapShot.val()}));
+    });
   }
 
   _toggleAudioRecorder () {
@@ -55,8 +63,8 @@ export default class Langit extends React.Component {
   }
 
   _saveRecording ( recording ) {
-    const { saveRecording, model } = this.props;
-    saveRecording(model, recording);
+    const { saveRecording, id } = this.props;
+    saveRecording(id, recording);
     this.setState({showAudioRecorder:false});
   }
 
@@ -75,9 +83,8 @@ export default class Langit extends React.Component {
   }
 
   _positionElements () {
-    const { knowledgeTarget } = this.refs;
     const { showAudioRecorder } = this.state;
-    const targetDomNode = ReactDOM.findDOMNode(knowledgeTarget);
+    const targetDomNode = ReactDOM.findDOMNode(this.knowledgeTarget);
 
     const elWidth = targetDomNode.offsetWidth;
     const elHeight = targetDomNode.offsetHeight;
@@ -127,9 +134,7 @@ export default class Langit extends React.Component {
     const { showAudioRecorder } = this.state;
 
     if (showAudioRecorder) {
-
-      const { knowledgeTarget } = this.refs;
-      const targetDomNode = ReactDOM.findDOMNode(knowledgeTarget);
+      const targetDomNode = ReactDOM.findDOMNode(this.knowledgeTarget);
 
       const elWidth = targetDomNode.offsetWidth;
       const elHeight = targetDomNode.offsetHeight;
@@ -152,21 +157,26 @@ export default class Langit extends React.Component {
   }
 
   _buildWidgets () {
-    const widgets = [];
-    this.widgetRefs = [];
-    const count = 0;
-    for(let i = 0; i < count; i++){
-      let ref = `widget_${i}`;
-      this.widgetRefs.push(ref);
-      let el = (<SoundByte key={ref} ref={ref}/>);
-      widgets.push(el);
+    const { model } = this.props;
+
+    if (model !== null && model !== undefined) {
+      const widgets = model.get('widgets');
+      if(widgets !== undefined && widgets !== null){
+        this.widgetRefs = new List();
+        return widgets
+          .map((widget, id) => {
+            const ref = `widget_${id}`;
+            this.widgetRefs = this.widgetRefs.push(ref);
+            return (<SoundByte key={ref} ref={ref} id={id} model={widget}/>)
+          })
+          .toArray();
+      }
     }
 
-    return widgets;
+    return '';
   }
 
   _renderAudioRecorder (position) {
-
     const { showAudioRecorder } = this.state;
 
     const audioRecorderContainerStyles = {
@@ -182,22 +192,22 @@ export default class Langit extends React.Component {
     } else {
       return '';
     }
-
   }
 
   render () {
+
     const styles = {
       minWidth: '100%',
       position: 'relative',
       display: 'flex'
     };
 
-    const { model: { id } } = this.props;
+    const { id } = this.props;
 
     return (
       <div ref='plumbContainer' style={styles}>
         {this._renderAudioRecorder()}
-        <KnowledgeTarget ref='knowledgeTarget' langitId={id} audioFunc={::this._toggleAudioRecorder} />
+        <KnowledgeTarget ref={node => this.knowledgeTarget = node} langitId={id} audioFunc={::this._toggleAudioRecorder} />
         {this._buildWidgets()}
       </div>
     );

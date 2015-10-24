@@ -1,11 +1,14 @@
 import React from 'react';
 import Radium from 'radium';
 import Langit from 'components/Langit';
+import { Map } from 'immutable';
+import { LANGIT } from 'constants/widgets';
 
 @Radium
 export default class ScratchPad extends React.Component {
   static propTypes = {
     scratchPad: React.PropTypes.object.isRequired,
+    langits: React.PropTypes.object,
     saveRecording: React.PropTypes.func.isRequired,
     dispatch: React.PropTypes.func.isRequired
   }
@@ -64,6 +67,38 @@ export default class ScratchPad extends React.Component {
       });
   }
 
+  _langitWithId (id) {
+    const { langits = new Map() } = this.props;
+    const match = langits.get(id);
+    if(match !== undefined || match != null){
+      return match;
+    }else{
+      return null;
+    }
+  }
+
+  _createLangit (id) {
+    const data = this._langitWithId(id);
+    const { saveRecording, dispatch } = this.props;
+    const props = {
+      id,
+      model: data,
+      key: id,
+      saveRecording,
+      dispatch
+    };
+
+    return (<Langit {...props} />)
+  }
+
+  _buildScratchElement (item) {
+    switch(item.type) {
+      case LANGIT :
+        return this._createLangit(item.id);
+      break;
+    }
+  }
+
   render () {
     const styles = {
       display: 'flex'
@@ -76,11 +111,11 @@ export default class ScratchPad extends React.Component {
       overflowX:'auto'
     };
 
-    const { scratchPad, saveRecording, dispatch } = this.props;
+    const { scratchPad } = this.props;
 
     const itemList = scratchPad
       .sort((a, b) => a.t - b.t)
-      .map(item=>(<Langit saveRecording={saveRecording} key={item.id} model={item} dispatch={dispatch}/>))
+      .map(item => this._buildScratchElement(item))
       .toArray();
 
     return (

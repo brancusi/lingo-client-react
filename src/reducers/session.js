@@ -5,7 +5,6 @@ import {
   JOIN_SESSION,
   PROCESS_SCRATCH_PAD_DATA_ADDED,
   PROCESS_SCRATCH_PAD_DATA_REMOVED,
-  PROCESS_NEW_LANGIT,
   MERGE_CHAT_HISTORY
 } from 'constants/session';
 
@@ -44,9 +43,6 @@ export default createReducer(initialState, {
   [ PROCESS_SCRATCH_PAD_DATA_REMOVED ]:(state, payload)=>{
     const newScratch = state.get('scratchPad').delete(payload.id);
     return state.set('scratchPad', newScratch);
-  },
-  [ PROCESS_NEW_LANGIT ]:(state)=>{
-    return state;
   },
   [ MERGE_CHAT_HISTORY ]:(state, payload)=>{
     const merged = state.get('sessionChat').merge(new Map(payload));
