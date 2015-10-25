@@ -131,18 +131,12 @@ export class SessionView extends React.Component {
 
     const shareLink = `http://localhost:5000/sessions/${guid}`;
 
-    const toolBarStyles = {
-      paddingBottom: 200
-    }
-    
     return (
       <div className='stretch flexCol'>
         <div className='row stretch' >
           <ScratchPad scratchPad={scratchPad} langits={langits} saveRecording={::this._saveRecording} dispatch={dispatch}/>
         </div>
-        <div style={toolBarStyles}>
-          <LearningToolbar createLangit={::this._createNewLangit}/>
-        </div>
+        <LearningToolbar createLangit={::this._createNewLangit}/>
         <CommunicationHud creds={credentials} chat={sessionChat} newChatMessage={::this._addChatMessage} />
       </div>
     );
@@ -161,11 +155,7 @@ export class SessionView extends React.Component {
   render () {
     const { session:{ credentials : { apiKey, sessionId, token } } } = this.props;
 
-    const hasCredentials = ((apiKey !== undefined) &&
-                            (sessionId !== undefined) &&
-                            (token !== undefined));
-
-    if (hasCredentials) {
+    if (apiKey && sessionId && token) {
       return this._hasCredentialsFragment();
     } else {
       return this._defaultFragment();

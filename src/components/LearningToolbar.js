@@ -1,5 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
+import IconButton from 'components/ui/buttons/IconButton';
 
 @Radium
 export default class LearningToolbar extends React.Component {
@@ -9,16 +10,29 @@ export default class LearningToolbar extends React.Component {
 
   render () {
     const { createLangit } = this.props;
+
+    const SIZE = 50;
+
     const styles = {
-      padding: '5px'
-    };
+      position: 'absolute',
+      top: window.innerHeight/2 - 50,
+      left: '100%',
+      marginLeft: '-80px',
+      zIndex: 1001
+    }
+
+    const uiProps = {
+      icon: 'fa-plus',
+      size: SIZE,
+      borderRadius: '14',
+      click: createLangit,
+      overTween: {opacity: 0.8},
+      outTween: {opacity: 1}
+    }
 
     return (
       <div style={styles}>
-        <h3>Toolbar</h3>
-        <button className='btn btn-default' onClick={createLangit}>
-          Create a langit!
-        </button>
+        <IconButton {...uiProps}/>
       </div>
     );
   }

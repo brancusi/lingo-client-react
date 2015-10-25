@@ -1,7 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import Langit from 'components/Langit';
-import { Map } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { LANGIT } from 'constants/widgets';
 
 @Radium
@@ -37,20 +37,20 @@ export default class ScratchPad extends React.Component {
     const hammer = new Hammer(canvas, { direction: Hammer.DIRECTION_ALL, threshold: 0 });
 
     const panStarts = Rx.Observable.fromEventPattern(
-        (h) => hammer.on('panstart', h),
-        (h) => hammer.off('panstart', h)
+        h => hammer.on('panstart', h),
+        h => hammer.off('panstart', h)
     );
 
     const pans = Rx.Observable.fromEventPattern(
-        (h) => hammer.on('pan', h),
-        (h) => hammer.off('pan', h)
-    )
+        h => hammer.on('pan', h),
+        h => hammer.off('pan', h)
+      )
       .map(e => e.deltaX);
 
     const panEnds = Rx.Observable.fromEventPattern(
-        (h) => hammer.on('panend', h),
-        (h) => hammer.off('panend', h)
-    )
+        h => hammer.on('panend', h),
+        h => hammer.off('panend', h)
+      )
       .map(e => e.deltaX);
 
     this.dragsSubscription = panStarts
@@ -70,19 +70,18 @@ export default class ScratchPad extends React.Component {
   _langitWithId (id) {
     const { langits = new Map() } = this.props;
     const match = langits.get(id);
-    if(match !== undefined || match != null){
+    if(match){
       return match;
     }else{
-      return null;
+      return fromJS({widgets:{}});
     }
   }
 
   _createLangit (id) {
-    const data = this._langitWithId(id);
     const { saveRecording, dispatch } = this.props;
     const props = {
       id,
-      model: data,
+      model: this._langitWithId(id),
       key: id,
       saveRecording,
       dispatch
@@ -117,6 +116,8 @@ export default class ScratchPad extends React.Component {
       .sort((a, b) => a.t - b.t)
       .map(item => this._buildScratchElement(item))
       .toArray();
+
+
 
     return (
       <div className='col-sm-12' style={styles}>

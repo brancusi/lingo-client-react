@@ -28,7 +28,7 @@ export default class Root extends React.Component {
 
     return (
       <DebugPanel top right bottom key='debugPanel'>
-        <DevTools store={this.props.store} monitor={LogMonitor} />
+        <DevTools store={this.props.store} monitor={LogMonitor} visibleOnLoad={false} />
       </DebugPanel>
     );
   }

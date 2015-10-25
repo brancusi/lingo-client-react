@@ -6,6 +6,7 @@ import SoundByte from 'components/widgets/audio/SoundByte';
 import AudioRecorder from 'components/widgets/audio/AudioRecorder';
 import KnowledgeTarget from 'components/widgets/text/KnowledgeTarget';
 import Victor from 'victor';
+import Rx from 'rx';
 import { aabbLine } from 'utils/geom';
 import {
   uploadAudio,
@@ -23,7 +24,7 @@ export default class Langit extends React.Component {
 
   constructor(props) {
     super(props);
-    this.widgetRefs = new List();
+    this.widgetRefs = List();
     this.state = {showAudioRecorder: false};
   }
 
@@ -31,21 +32,22 @@ export default class Langit extends React.Component {
     this._createPlubInstance();
     this._positionElements();
     this._addFBListeners();
+    this._addResizeListeners();
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    console.log('Should update');
-    return this._hasChanged(this.props, nextProps) || this._hasChanged(this.state, nextState);
+    const propsChanged = this._hasChanged(nextProps.model, this.props.model);
+    const stateChanged = (this.state.showAudioRecorder !== nextState.showAudioRecorder);
+    return propsChanged || stateChanged;
   }
 
   componentDidUpdate (prevProps, prevState) {
-    console.log('Did update', this._hasChanged(this.props, prevProps));
-    if(this._hasChanged(this.props, prevProps))this._positionElements();
-    if(this._hasChanged(this.state, prevState))this._syncAudioRecorderState();
+    if(this._hasChanged(this.props.model, prevProps.model))this._positionElements();
+    if(this.state.showAudioRecorder !== prevState.showAudioRecorder)this._positionElements();
   }
 
   _hasChanged (obj, against) {
-    return !fromJS(this.props).equals(fromJS(against));
+    return !obj.equals(against);
   }
 
   _addFBListeners () {
@@ -56,6 +58,12 @@ export default class Langit extends React.Component {
     this.fbChatRef.on('value', snapShot => {
       dispatch(processWidgetData({id, widgets:snapShot.val()}));
     });
+  }
+
+  _addResizeListeners () {
+    this.resizes = Rx.Observable.fromEvent(window, 'resize');
+    this.resizes
+      .subscribe(e => this._positionElements(0));
   }
 
   _toggleAudioRecorder () {
@@ -73,8 +81,7 @@ export default class Langit extends React.Component {
   }
 
   _createPlubInstance () {
-    const { plumbContainer } = this.refs;
-    this.plumbInstance = jsPlumb.getInstance({Container: plumbContainer});
+    this.plumbInstance = jsPlumb.getInstance({Container: this.plumbContainer});
     this.plumbInstance.importDefaults({
       Connector : [ "Straight" ],
       Anchors : [ "Center", "Center" ],
@@ -82,92 +89,133 @@ export default class Langit extends React.Component {
     });
   }
 
-  _positionElements () {
-    const { showAudioRecorder } = this.state;
-    const targetDomNode = ReactDOM.findDOMNode(this.knowledgeTarget);
+  _positionElements ( speed = 0.25 ) {
+    const { kwCenterX, kwCenterY, kwWidth, kwHeight } = this._positions();
+    const startAngle = 150;
+    const endAngle = 50;
+    const availableDeg = 360 - (startAngle - endAngle)
+    const degInc = availableDeg/this.widgetRefs.size;
 
-    const elWidth = targetDomNode.offsetWidth;
-    const elHeight = targetDomNode.offsetHeight;
-    const elX = targetDomNode.offsetLeft;
-    const elY = targetDomNode.offsetTop;
-    const centerX = elX + elWidth/2;
-    const centerY = elY + elHeight/2;
-
-    const degInc = 360/this.widgetRefs.length;
+    this._positionAudioPlayer(speed);
 
     this.widgetRefs
-      .map((ref, index) => {
-        const domNode = ReactDOM.findDOMNode(this.refs[ref]);
+      .map(ref => this.refs[ref])
+      .map((domNode, index) => {
+
         this.plumbInstance.connect({
           source:domNode,
-          target:targetDomNode
+          target:this.knowledgeTargetContainer
         });
 
         const inc = degInc * index;
-        const angleVec = new Victor(100, 100)
-          .rotateDeg(inc)
-          .normalize();
 
-        const outsidePoint = angleVec.clone()
+        const angleVec = new Victor(100, 100)
+          .rotateToDeg(startAngle)
+          .rotateDeg(inc)
+          .normalize()
           .multiplyScalar(10000);
 
-        const boxPoint = aabbLine(outsidePoint.x, outsidePoint.y, -30, -30, elWidth+30, elHeight+30);
-        const boxVec = new Victor(boxPoint.x, boxPoint.y);
-        const distance = new Victor(elWidth/2, elHeight/2).distance(boxVec);
-        const min = 20;
-        const max = 80;
-        const mag = Math.floor(Math.random() * ((min-max)+1) + max);
-        const destVec = angleVec.clone()
-          .multiplyScalar(distance + mag);
+        const left = -kwWidth/2;
+        const right = kwWidth/2;
+        const top = -kwHeight/2;
+        const bottom = kwHeight/2;
 
-        const targetX = (destVec.x + centerX);
-        const targetY = (destVec.y + centerY);
+        const boxPoint = aabbLine(angleVec.x, angleVec.y, left, top, right, bottom);
 
-        TweenMax.to(domNode, 1, {left:targetX, top:targetY, ease:Elastic.easeOut, onUpdate:()=>{
-          this.plumbInstance.repaintEverything();
-        }});
+        const mag = new Victor(boxPoint.x, boxPoint.y).length();
+
+        const destVec = new Victor(boxPoint.x, boxPoint.y)
+          .normalize()
+          .multiplyScalar(mag + 100);
+
+        const startX = (boxPoint.x + kwCenterX);
+        const startY = (boxPoint.y + kwCenterY);
+        const targetX = (destVec.x + kwCenterX);
+        const targetY = (destVec.y + kwCenterY);
+
+        TweenMax.to(domNode, speed, {
+          startAt: {
+            left:startX,
+            top:startY
+          },
+          left: targetX,
+          top: targetY,
+          opacity: 1,
+          ease: Expo.easeOut,
+          onUpdate:()=>{
+            this.plumbInstance.repaintEverything();
+          }
+        });
 
       });
   }
 
-  _syncAudioRecorderState () {
+  _positionAudioPlayer ( speed = 0.25 ) {
     const { showAudioRecorder } = this.state;
 
     if (showAudioRecorder) {
-      const targetDomNode = ReactDOM.findDOMNode(this.knowledgeTarget);
-
-      const elWidth = targetDomNode.offsetWidth;
-      const elHeight = targetDomNode.offsetHeight;
-      const elX = targetDomNode.offsetLeft;
-      const elY = targetDomNode.offsetTop;
-      const centerX = elX + elWidth/2;
-      const centerY = elY + elHeight/2;
-
+      const { kwCenterX, kwCenterY, kwHeight } = this._positions();
       const arWidth = this.audioRecorderContainer.offsetWidth;
       const arHeight = this.audioRecorderContainer.offsetHeight;
-      TweenMax.to(this.audioRecorderContainer, 0.25, {
+
+      const startX = kwCenterX-arWidth/2;
+      const startY = kwCenterY-arHeight/2;
+      const targetX = kwCenterX-arWidth/2;
+      const targetY = kwCenterY+kwHeight/2 + 20;
+
+      TweenMax.to(this.audioRecorderContainer, speed, {
         startAt: {
-          top:centerY-arHeight/2,
-          left:centerX-arWidth/2
+          left: startX,
+          top: startY
         },
-        left:centerX-arWidth/2,
-        top:centerY+elHeight/2 + 20,
+        opacity: 1,
+        left: targetX,
+        top: targetY,
         ease:Expo.easeOut});
     }
   }
 
-  _buildWidgets () {
-    const { model } = this.props;
+  _positions () {
+    const kwWidth = this.knowledgeTargetContainer.offsetWidth;
+    const kwHeight = this.knowledgeTargetContainer.offsetHeight;
+    const kwLeft = this.knowledgeTargetContainer.offsetLeft;
+    const kwTop = this.knowledgeTargetContainer.offsetTop;
+    const kwCenterX = kwLeft + kwWidth/2;
+    const kwCenterY = kwTop + kwHeight/2;
 
-    if (model !== null && model !== undefined) {
+    return {
+      kwWidth,
+      kwHeight,
+      kwLeft,
+      kwTop,
+      kwCenterX,
+      kwCenterY
+    };
+  }
+
+  _buildWidgets () {
+    const { id, model } = this.props;
+    const styles = {
+        position: 'absolute',
+        opacity: 0
+    };
+
+    this.widgetRefs = List();
+
+    if (model) {
       const widgets = model.get('widgets');
-      if(widgets !== undefined && widgets !== null){
-        this.widgetRefs = new List();
+
+      if(widgets){
+
         return widgets
           .map((widget, id) => {
             const ref = `widget_${id}`;
             this.widgetRefs = this.widgetRefs.push(ref);
-            return (<SoundByte key={ref} ref={ref} id={id} model={widget}/>)
+            return (
+              <div key={ref} ref={ref} style={styles}>
+                <SoundByte id={id} model={widget}/>
+              </div>
+            );
           })
           .toArray();
       }
@@ -179,13 +227,14 @@ export default class Langit extends React.Component {
   _renderAudioRecorder (position) {
     const { showAudioRecorder } = this.state;
 
-    const audioRecorderContainerStyles = {
-      position: 'absolute'
+    const styles = {
+      position: 'absolute',
+      opacity: 0
     }
 
     if (showAudioRecorder) {
         return (
-          <div ref={node=>this.audioRecorderContainer = node} style={audioRecorderContainerStyles}>
+          <div ref={node=>this.audioRecorderContainer = node} style={styles}>
             <AudioRecorder save={::this._saveRecording} cancel={::this._cancelRecording} />
           </div>
         );
@@ -194,20 +243,42 @@ export default class Langit extends React.Component {
     }
   }
 
-  render () {
+  _renderKnowledgeWidget () {
+    const { id } = this.props;
 
+    const outerContainerStyles = {
+      display: 'flex',
+      flex: '1',
+      justifyContent: 'center',
+      zIndex: 1001,
+      pointerEvents:'none'
+    };
+
+    const innerContainerStyles = {
+      pointerEvents:'none'
+    }
+
+    return (
+      <div style={outerContainerStyles} >
+        <div ref={node => {this.knowledgeTargetContainer = node}} style={innerContainerStyles}>
+          <KnowledgeTarget langitId={id} audioFunc={::this._toggleAudioRecorder} />
+        </div>
+      </div>
+    );
+  }
+
+  render () {
     const styles = {
+      marginTop: '-200px',
       minWidth: '100%',
       position: 'relative',
       display: 'flex'
     };
 
-    const { id } = this.props;
-
     return (
-      <div ref='plumbContainer' style={styles}>
+      <div ref={node => this.plumbContainer = node} style={styles}>
         {this._renderAudioRecorder()}
-        <KnowledgeTarget ref={node => this.knowledgeTarget = node} langitId={id} audioFunc={::this._toggleAudioRecorder} />
+        {this._renderKnowledgeWidget()}
         {this._buildWidgets()}
       </div>
     );

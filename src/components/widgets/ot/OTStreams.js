@@ -70,7 +70,7 @@ export default class OTStreams extends React.Component {
     };
 
     const { session } = this.state;
-    const isConnected = ((session !== null) && (session !== undefined));
+    const isConnected = session ? true : false;
 
     if (isConnected) {
       return (
