@@ -2,11 +2,13 @@ import React from 'react';
 import Radium from 'radium';
 import PublishManager from 'components/widgets/ot/publisher/Manager';
 import StreamsManager from 'components/widgets/ot/streams/Manager';
+import guid from 'utils/guid';
 
 @Radium
 export default class OTStreams extends React.Component {
   static propTypes = {
-    credentials: React.PropTypes.object.isRequired
+    credentials: React.PropTypes.object.isRequired,
+    profileImageUrl: React.PropTypes.string
   };
 
   constructor(props) {
@@ -65,23 +67,27 @@ export default class OTStreams extends React.Component {
   }
 
   render () {
-    const rootStyles = {
-      display: 'flex'
+    const containerStyles = {
+      display: 'flex',
+      height: 153,
+      borderTop: '3px dashed red',
+      borderRight: '3px dashed red'
     };
 
+    const { profileImageUrl } = this.props;
     const { session } = this.state;
     const isConnected = session ? true : false;
 
     if (isConnected) {
       return (
-        <div className='row' style={rootStyles}>
-          <PublishManager session={session} />
+        <div style={containerStyles}>
+          <PublishManager session={session} profileImageUrl={profileImageUrl} />
           <StreamsManager session={session} />
         </div>
       );
     } else {
       return (
-        <div className='row' style={rootStyles}>
+        <div style={containerStyles}>
           <h4>I pity the unconnected fool</h4>
         </div>
       );

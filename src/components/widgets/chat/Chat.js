@@ -4,6 +4,8 @@ import Message from 'components/widgets/chat/Message';
 import IconButton from 'components/ui/buttons/IconButton';
 import { Map } from 'immutable';
 
+const MINIMIZED_HEIGHT = 130;
+
 @Radium
 export default class Chat extends React.Component {
   static propTypes = {
@@ -40,9 +42,10 @@ export default class Chat extends React.Component {
 
   _syncToggle () {
     if(this.state.expanded){
-      TweenMax.to(this.container, 0.4, {height:400, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
+      const targetHeight = window.innerHeight/3;
+      TweenMax.to(this.container, 0.4, {height:targetHeight, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
     }else{
-      TweenMax.to(this.container, 0.3, {height:130, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
+      TweenMax.to(this.container, 0.3, {height:MINIMIZED_HEIGHT, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
     }
   }
 

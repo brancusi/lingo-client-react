@@ -141,7 +141,7 @@ export default class AudioRecorder extends React.Component {
 
   render () {
     const styles = {
-      border: '1px solid #C4C4C4',
+      border: '4px solid #C4C4C4',
       position: 'relative',
       minWidth: WIDTH,
       minHeight: HEIGHT,

@@ -127,7 +127,23 @@ export class SessionView extends React.Component {
   }
 
   _hasCredentialsFragment () {
-    const { dispatch, langits, session:{ credentials, scratchPad, sessionChat, credentials: { guid } } } = this.props;
+    const {
+      dispatch,
+      langits,
+      session : {
+        credentials,
+        scratchPad,
+        sessionChat,
+        credentials: {
+          guid
+        }
+      },
+      auth : {
+        profile : {
+          picture
+        }
+      }
+    } = this.props;
 
     const shareLink = `http://localhost:5000/sessions/${guid}`;
 
@@ -137,7 +153,7 @@ export class SessionView extends React.Component {
           <ScratchPad scratchPad={scratchPad} langits={langits} saveRecording={::this._saveRecording} dispatch={dispatch}/>
         </div>
         <LearningToolbar createLangit={::this._createNewLangit}/>
-        <CommunicationHud creds={credentials} chat={sessionChat} newChatMessage={::this._addChatMessage} />
+        <CommunicationHud creds={credentials} chat={sessionChat} profileImageUrl={picture} newChatMessage={::this._addChatMessage} />
       </div>
     );
   }

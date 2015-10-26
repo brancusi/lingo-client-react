@@ -35,27 +35,36 @@ export default class Manager extends React.Component {
   }
 
   _processStreamCreated (event) {
+    console.log(event);
     const { streams } = this.state;
     const { stream, stream : { id } } = event;
     this.setState({streams: streams.set(id, stream)});
   }
 
   _processStreamDestroyed (event) {
+    console.log(event);
     const { streams } = this.state;
     const { stream : { id } } = event;
     this.setState({streams: streams.delete(id)});
   }
 
-  render () {
+  _createMediaOutlets () {
     const { session } = this.props;
     const { streams } = this.state;
 
-    const mediaCollection = streams
+    return streams
       .map((stream, key) => (<Media key={key} session={session} stream={stream} />)).toArray();
+  }
+
+  render () {
+    const containerStyles = {
+      display: 'flex',
+      zIndex: 1000
+    };
 
     return (
-      <div>
-        {mediaCollection}
+      <div style={containerStyles}>
+        {this._createMediaOutlets()}
       </div>
     );
   }

@@ -15,7 +15,7 @@ export default class LearningToolbar extends React.Component {
 
     const styles = {
       position: 'absolute',
-      top: window.innerHeight/2 - 50,
+      top: '35%',
       left: '100%',
       marginLeft: '-80px',
       zIndex: 1001

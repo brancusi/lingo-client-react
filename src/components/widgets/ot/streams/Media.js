@@ -1,6 +1,9 @@
 import React from 'react';
 import Radium from 'radium';
 
+export const WIDTH = 200;
+export const HEIGHT = 150;
+
 @Radium
 export default class Media extends React.Component {
   static propTypes = {
@@ -10,10 +13,9 @@ export default class Media extends React.Component {
 
   componentDidMount () {
     const { session, stream } = this.props;
-    const options = { width : 200, height: 150 };
-    const { container } = this.refs;
+    const options = { width : WIDTH, height: HEIGHT, showControls: false };
 
-    this.subscriber = session.subscribe(stream, container, options);
+    this.subscriber = session.subscribe(stream, this.container, options);
   }
 
   componentWillUnmount () {
@@ -22,9 +24,14 @@ export default class Media extends React.Component {
   }
 
   render () {
+    const containerStyles = {
+      width: WIDTH,
+      height: HEIGHT
+    };
+
     return (
-      <div>
-        <div ref='container'/>
+      <div style={containerStyles}>
+        <div ref={node => this.container = node}/>
       </div>
     );
   }

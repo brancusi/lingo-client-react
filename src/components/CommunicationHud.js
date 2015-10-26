@@ -6,52 +6,33 @@ export default class CommunicationHud extends React.Component {
   static propTypes = {
     creds : React.PropTypes.object.isRequired,
     chat : React.PropTypes.object.isRequired,
-    newChatMessage : React.PropTypes.func.isRequired
+    newChatMessage : React.PropTypes.func.isRequired,
+    profileImageUrl : React.PropTypes.string
   };
 
   render () {
-    const { creds, chat, newChatMessage } = this.props;
+    const { creds, chat, newChatMessage, profileImageUrl } = this.props;
 
-    const styles = {
-      position: 'absolute',
-      left: 0,
-      bottom: 0,
+    const countainerStyles = {
       display: 'flex',
-      width: '100%',
+      justifyContent: 'space-between',
       zIndex: 1000
     };
 
-    const otContainerStyles = {
-
-    }
-
-    const chatContainerStyles = {
-
-    };
-
-    const spacerStyles = {
-      flex: 1
-    }
-
-    const outerWrapperStyles = {
+    const colContainerStyles = {
       display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'flex-end'
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
     }
 
     return (
-      <div style={styles}>
-        <div style={outerWrapperStyles}>
-          <div style={otContainerStyles}>
-            <OTStreams credentials={creds} />
-          </div>
+      <div className='row' style={countainerStyles}>
+        <div style={colContainerStyles}>
+          <OTStreams credentials={creds} profileImageUrl={profileImageUrl}/>
         </div>
-        <div style={spacerStyles}></div>
-        <div style={outerWrapperStyles}>
-          <div style={chatContainerStyles}>
-            <Chat sessionChat={chat} addChatMessage={newChatMessage} />
-          </div>
-      </div>
+        <div style={colContainerStyles}>
+          <Chat sessionChat={chat} addChatMessage={newChatMessage} />
+        </div>
       </div>
     );
   }
