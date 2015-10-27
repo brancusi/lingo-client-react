@@ -20,12 +20,7 @@ export default class Media extends React.Component {
     this._syncAudioState();
   }
 
-  componentWillUnmount () {
-    const { session } = this.props;
-    session.unpublish(this.publisher);
-  }
-
-  shouldComponentUpdate ( nextProps, nextState ) {
+  shouldComponentUpdate ( nextProps ) {
     // const sessionChanged = _hasChanged(nextProps.session, this.props.session);
     const videoStateChanged = nextProps.publishVideo !== this.props.publishVideo;
     const audioStateChanged = nextProps.publishAudio !== this.props.publishAudio;
@@ -33,25 +28,30 @@ export default class Media extends React.Component {
     return videoStateChanged || audioStateChanged;
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate ( prevProps ) {
     // const sessionChanged = _hasChanged(nextProps.session, this.props.session);
     const videoStateChanged = prevProps.publishVideo !== this.props.publishVideo;
     const audioStateChanged = prevProps.publishAudio !== this.props.publishAudio;
 
     // if(sessionChanged)this._createPublisher();
-    if(videoStateChanged)this._syncVideoState();
-    if(audioStateChanged)this._syncAudioState();
+    if ( videoStateChanged )this._syncVideoState();
+    if ( audioStateChanged )this._syncAudioState();
+  }
+
+  componentWillUnmount () {
+    const { session } = this.props;
+    session.unpublish(this.publisher);
   }
 
   _createPublisher () {
-    const { session, profileImageUrl } = this.props;
+    const { session } = this.props;
     const options = {
       width : WIDTH,
       height: HEIGHT,
       showControls: false,
       publishVideo: false,
       publishAudio: false
-     };
+    };
     this.publisher = session.publish(this.container, options);
   }
 
@@ -62,9 +62,9 @@ export default class Media extends React.Component {
   _syncAudioState () {
     const { publishAudio } = this.props;
 
-    if(publishAudio) {
+    if ( publishAudio ) {
       this.publisher.publishAudio(true);
-    }else{
+    } else {
       this.publisher.publishAudio(false);
     }
   }
@@ -72,9 +72,9 @@ export default class Media extends React.Component {
   _syncVideoState () {
     const { publishVideo } = this.props;
 
-    if(publishVideo) {
+    if ( publishVideo ) {
       this.publisher.publishVideo(true);
-    }else{
+    } else {
       this.publisher.publishVideo(false);
     }
   }

@@ -18,8 +18,8 @@ export default class HoverToolbar extends React.Component {
     this.overs = Rx.Observable.fromEvent(this.trigger, 'mouseover');
     this.outs = Rx.Observable.fromEvent(this.trigger, 'mouseout');
 
-    this.oversSub = this.overs.subscribe(e => this._show());
-    this.outsSub = this.outs.subscribe(e => this._hide());
+    this.oversSub = this.overs.subscribe(() => this._show());
+    this.outsSub = this.outs.subscribe(() => this._hide());
   }
 
   componentWillUnmount () {
@@ -54,16 +54,15 @@ export default class HoverToolbar extends React.Component {
       minWidth: width,
       minHeight: height,
       overflow: 'hidden'
-    }
+    };
 
     const uiContainer = {
-      background: background,
       display: 'flex',
       justifyContent: 'space-between',
       background: background,
       padding: 10,
       marginTop: -100
-    }
+    };
 
     return (
       <div ref={node => this.trigger = node} style={styles}>

@@ -14,7 +14,7 @@ export default class Header extends React.Component {
   render () {
     const styles = {
       backgroundColor: '#e3f2fd',
-      fontFamily: 'sofia-pro-soft, sans-serif',
+      fontFamily: 'sofia-pro-soft, sans-serif'
     };
 
     const { login, logout, auth } = this.props;

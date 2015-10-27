@@ -35,14 +35,12 @@ export default class Manager extends React.Component {
   }
 
   _processStreamCreated (event) {
-    console.log(event);
     const { streams } = this.state;
     const { stream, stream : { id } } = event;
     this.setState({streams: streams.set(id, stream)});
   }
 
   _processStreamDestroyed (event) {
-    console.log(event);
     const { streams } = this.state;
     const { stream : { id } } = event;
     this.setState({streams: streams.delete(id)});

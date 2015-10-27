@@ -3,13 +3,13 @@ import Rx from 'rx';
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-const OpusEncoderWorker = require("worker!./opus/workers/oggopusEncoder.js");
-const OpusDecoderWorker = require("worker!utils/opus/workers/oggopusDecoder.js");
+const OpusEncoderWorker = require('worker!./opus/workers/oggopusEncoder.js');
+const OpusDecoderWorker = require('worker!utils/opus/workers/oggopusDecoder.js');
 
 export default class AudioRecorder {
 
   static getInstance ( config ) {
-    if(!this.instance){
+    if ( !this.instance ) {
       this.instance = new AudioRecorder(config);
       this.instance.initialize();
     }
@@ -21,7 +21,7 @@ export default class AudioRecorder {
     this.audioContext = new window.AudioContext();
     this._createConfig(config);
     this._createRxStreams();
-    this.state = "inactive";
+    this.state = 'inactive';
     this.createAudioNodes();
   }
 
@@ -92,9 +92,9 @@ export default class AudioRecorder {
     this.filterNode = this.audioContext.createBiquadFilter();
     this.filterNode2 = this.audioContext.createBiquadFilter();
     this.filterNode3 = this.audioContext.createBiquadFilter();
-    this.filterNode.type = this.filterNode2.type = this.filterNode3.type = "lowpass";
+    this.filterNode.type = this.filterNode2.type = this.filterNode3.type = 'lowpass';
 
-    var nyquistFreq = this.config.sampleRate / 2;
+    const nyquistFreq = this.config.sampleRate / 2;
     this.filterNode.frequency.value = this.filterNode2.frequency.value = this.filterNode3.frequency.value = nyquistFreq - ( nyquistFreq / 3.5355 );
     this.filterNode.Q.value = 0.51764;
     this.filterNode2.Q.value = 0.70711;
@@ -106,13 +106,13 @@ export default class AudioRecorder {
   }
 
   encodeBuffers ( inputBuffer ) {
-    if ( this.state === "recording" ) {
-      var buffers = [];
-      for ( var i = 0; i < inputBuffer.numberOfChannels; i++ ) {
+    if ( this.state === 'recording' ) {
+      const buffers = [];
+      for ( let i = 0; i < inputBuffer.numberOfChannels; i++ ) {
         buffers[i] = inputBuffer.getChannelData(i);
       }
 
-      this.encoder.postMessage({ command: "encode", buffers: buffers });
+      this.encoder.postMessage({ command: 'encode', buffers: buffers });
     }
   }
 
@@ -139,43 +139,31 @@ export default class AudioRecorder {
   }
 
   record () {
-    if ( this.state === "inactive" && this.stream ) {
-      var that = this;
-
+    if ( this.state === 'inactive' && this.stream ) {
       this.encoder = new OpusEncoderWorker();
-
       this.recordedPages = [];
       this.totalLength = 0;
-      this.encoder.addEventListener( "message", e => {
+      this.encoder.addEventListener( 'message', e => {
         this.storePage( e.data );
       });
 
       // First buffer can contain old data. Don't encode it.
-      this.encodeBuffers = function(){
-        delete this.encodeBuffers;
-      };
+      this.encodeBuffers = () => delete this.encodeBuffers;
 
-      this.state = "recording";
+      this.state = 'recording';
       this.monitorNode.connect( this.audioContext.destination );
       this.nodeProcessor.connect( this.audioContext.destination );
-
-      this.encoder.postMessage( { command: "init", config: this.config } );
-
+      this.encoder.postMessage( { command: 'init', config: this.config } );
       this._dispatchState('recording');
     }
   }
 
   stop () {
-    if ( this.state !== "inactive" ) {
-      this.state = "inactive";
+    if ( this.state !== 'inactive' ) {
+      this.state = 'inactive';
       this.monitorNode.disconnect();
       this.nodeProcessor.disconnect();
-
-      // if ( !this.config.leaveStreamOpen ) {
-      //   this.clearStream();
-      // }
-
-      this.encoder.postMessage({ command: "done" });
+      this.encoder.postMessage({ command: 'done' });
     }
   }
 
@@ -185,18 +173,16 @@ export default class AudioRecorder {
 
     // Stream is finished
     if ( page[5] & 4 ) {
-      var outputData = new Uint8Array( this.totalLength );
-      var outputIndex = 0;
+      const outputData = new Uint8Array( this.totalLength );
+      let outputIndex = 0;
 
-      for ( var i = 0; i < this.recordedPages.length; i++ ) {
+      for ( let i = 0; i < this.recordedPages.length; i++ ) {
         outputData.set( this.recordedPages[i], outputIndex );
         outputIndex += this.recordedPages[i].length;
       }
 
       this.recordedPages = [];
-
-      this._dispatchRecording(new Blob( [outputData], { type: "audio/ogg" } ));
-
+      this._dispatchRecording(new Blob( [outputData], { type: 'audio/ogg' } ));
       this._dispatchState('completed');
     }
   }
@@ -209,31 +195,32 @@ export default class AudioRecorder {
    * {node:AudioBufferSourceNode, buffer:AudioBuffer}
    */
   createBufferSource ( blob, channels = 2 ) {
-    return new Promise((res, rej) => {
+    return new Promise(res => {
       const decoder = new OpusDecoderWorker();
       const buffers = [];
       const config = {
         outputBufferSampleRate : this.audioContext.sampleRate,
         bufferLength : this.config.bufferLength
-      }
+      };
 
       decoder.onmessage = e => {
         if (e.data === null) {
-
           const frameCount = buffers.length * config.bufferLength;
           const audioBuffer = this.audioContext.createBuffer(channels, frameCount, this.audioContext.sampleRate);
 
           // Fill the channel data
+          /*eslint-disable */
           for (let channel = 0; channel < channels; channel++) {
-            var channgelBuffer = audioBuffer.getChannelData(channel);
+            const channgelBuffer = audioBuffer.getChannelData(channel);
             buffers
-              .map((buffer, i) => {
+              .map((buffer, i) => { 
                 (buffer[channel] || buffer[0])
                   .forEach((frame, j) => {
-                    channgelBuffer[(i*config.bufferLength)+j] = frame;
+                    channgelBuffer[ (i * config.bufferLength) + j ] = frame;
                   });
               });
           }
+          /*eslint-enable */
 
           const source = this.audioContext.createBufferSource();
           source.buffer = audioBuffer;
@@ -251,13 +238,11 @@ export default class AudioRecorder {
 
       // Load blob
       const reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = () => {
         decoder.postMessage({ command: 'decode', pages: new Uint8Array(reader.result)});
         decoder.postMessage({ command: 'done' });
       };
       reader.readAsArrayBuffer(blob);
-
     });
   }
-
 }

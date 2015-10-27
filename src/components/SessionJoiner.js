@@ -33,7 +33,7 @@ export default class SessionJoiner extends React.Component {
     };
 
     const bodyStyles = {
-      fontWeight: 'regular',
+      fontWeight: 'normal',
       fontSize: '2em',
       paddingBottom: '2em'
     };

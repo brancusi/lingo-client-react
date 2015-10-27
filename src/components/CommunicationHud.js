@@ -22,8 +22,8 @@ export default class CommunicationHud extends React.Component {
     const colContainerStyles = {
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'flex-end',
-    }
+      justifyContent: 'flex-end'
+    };
 
     return (
       <div className='row' style={countainerStyles}>

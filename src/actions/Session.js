@@ -38,7 +38,7 @@ export function processScratchPadChildRemoved(data) {
 
 export function retrieveSessionInfo(guid) {
   return dispatch => {
-    return fetch(`http://bobcat.lingo.development.c66.me/sessions`, {
+    return fetch(`https://api.saysss.com/sessions`, {
       method: 'post',
       headers: {
         'Accept': 'application/json',
@@ -62,7 +62,7 @@ export function processNewLangit (data) {
 
 export function createLangit(sessionId) {
   return () => {
-    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+    const baseFBUrl = 'https://saysss.firebaseio.com/';
 
     return new Promise((res, rej)=>{
       const key = guidFn();
@@ -95,7 +95,7 @@ export function proccessChatHistory (history) {
 
 export function persistChatMessage (sessionId, msg, userId) {
   return dispatch => {
-    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+    const baseFBUrl = 'https://saysss.firebaseio.com/';
     const key = guidFn();
     const fbRef = new Firebase(`${baseFBUrl}chats/${sessionId}/${key}`);
     const message = {m:msg, t:moment().valueOf(), u:userId};
@@ -114,7 +114,6 @@ export function processProfileData (identityProviderData, auth0Data) {
     payload: {profile: identityProviderData, auth: auth0Data}
   };
 }
-
 
 /*
 export function processAuth0Data (data) {

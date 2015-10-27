@@ -34,7 +34,7 @@ export default class SoundBytePlayer extends React.Component {
     return (propsChanged || stateChanged);
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate (prevProps) {
     this._checkUpdate(prevProps);
   }
 
@@ -48,9 +48,8 @@ export default class SoundBytePlayer extends React.Component {
   }
 
   _updateSound (data) {
-    const { guid, blob } = data;
-    
-    if (blob !== undefined) {
+    const { blob } = data;
+    if ( blob !== undefined ) {
       this.audioBuffer = null;
       this.setState({loading:true, hasRecording:false});
 
@@ -84,15 +83,12 @@ export default class SoundBytePlayer extends React.Component {
 
       this.setState({playing: true});
     }
-
   }
 
   render () {
     const { playing, loading, hasRecording } = this.state;
     const { size } = this.props;
-
     const disabled = !hasRecording;
-
     const uiProps = {
       icon: (playing) ? 'fa-stop' : 'fa-play',
       iconOffset: (playing) ? {x:0, y:0} : {x:5, y:0},

@@ -6,11 +6,14 @@ export default class IconButton extends React.Component {
   static propTypes = {
     icon: PropTypes.string.isRequired,
     size: PropTypes.number.isRequired,
+    color: PropTypes.string,
+    background: PropTypes.string,
     border: PropTypes.string,
     borderRadius: PropTypes.string,
     over: PropTypes.func,
     out: PropTypes.func,
     click: PropTypes.func,
+    clickTween: PropTypes.object,
     overTween: PropTypes.object,
     outTween: PropTypes.object,
     disabled: PropTypes.bool,
@@ -28,15 +31,15 @@ export default class IconButton extends React.Component {
 
   _animateState () {
     const { loading, disabled } = this.props;
-    if(loading) {
+    if ( loading ) {
       TweenMax.to(this.iconNode, 0.5, {rotation:360, repeat:-1});
-    }else{
+    } else {
       TweenMax.to(this.iconNode, 0.25, {rotation:0});
     }
 
-    if(disabled) {
+    if ( disabled ) {
       TweenMax.to(this.domNode, 0.25, {opacity:0.25});
-    }else{
+    } else {
       TweenMax.to(this.domNode, 0.25, {opacity:1});
     }
   }
@@ -81,7 +84,7 @@ export default class IconButton extends React.Component {
       justifyContent: 'center',
       alignItems: 'center',
       display: 'flex',
-      fontSize: (size/2)-2,
+      fontSize: ( size / 2 ) - 2,
       cursor: 'pointer'
     };
 

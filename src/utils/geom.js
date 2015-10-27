@@ -1,3 +1,4 @@
+/*eslint-disable */
 /**
  * Finds the intersection point between
  *     * the rectangle
@@ -54,3 +55,4 @@ export function aabbLine(x, y, minX, minY, maxX, maxY, check) {
             return {x: maxYx, y: maxY};
     }
 }
+/*eslint-enable */

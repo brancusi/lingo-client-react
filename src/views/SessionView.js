@@ -2,7 +2,6 @@ import React       from 'react';
 import { connect } from 'react-redux';
 import ScratchPad from 'components/ScratchPad';
 import LearningToolbar from 'components/LearningToolbar';
-import LinkShare from 'components/widgets/share/LinkShare';
 import CommunicationHud from 'components/CommunicationHud';
 
 import {
@@ -18,7 +17,7 @@ import {
   uploadAudio
 } from 'actions/langit';
 
-import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3.js';
+import 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3.js';
 
 const mapStateToProps = (state) => {
   return {
@@ -103,7 +102,7 @@ export class SessionView extends React.Component {
     if (!this._listeningToFB) {
       this._listeningToFB = true;
       const { dispatch, session : { credentials : { sessionId } } } = this.props;
-      const baseFBURL = 'https://lingoapp.firebaseio.com/';
+      const baseFBURL = 'https://saysss.firebaseio.com/';
       this.fbScratchRef = new Firebase(`${baseFBURL}scratchPads/${sessionId}`).orderByChild('t');
       this.fbScratchRef.on('child_added', snapShot => dispatch(processScratchPadChildAdded(snapShot.val())));
       this.fbScratchRef.on('child_removed', snapShot => dispatch(processScratchPadChildRemoved(snapShot.val())));
@@ -133,10 +132,7 @@ export class SessionView extends React.Component {
       session : {
         credentials,
         scratchPad,
-        sessionChat,
-        credentials: {
-          guid
-        }
+        sessionChat
       },
       auth : {
         profile : {
@@ -144,8 +140,6 @@ export class SessionView extends React.Component {
         }
       }
     } = this.props;
-
-    const shareLink = `http://localhost:5000/sessions/${guid}`;
 
     return (
       <div className='stretch flexCol'>

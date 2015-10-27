@@ -3,8 +3,6 @@ import { Map } from 'immutable';
 
 import * as Actions from 'constants/auth';
 
-// const initialState = new Map();
-// 
 const initialState = new Map({jwt:'yo', profile: new Map({'given_name':'Aram', 'picture':'https://lh3.googleusercontent.com/-VaubpWApqU4/AAAAAAAAAAI/AAAAAAAAAK8/52OQ4n6koqw/photo.jpg'})});
 
 export default createReducer(initialState, {

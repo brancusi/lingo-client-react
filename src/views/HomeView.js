@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import SessionJoiner from 'components/SessionJoiner';
 import Footer from 'components/nav/Footer';
 
-import fetch from 'isomorphic-fetch';
-
 const mapStateToProps = (state) => ({
   session : state.session
 });

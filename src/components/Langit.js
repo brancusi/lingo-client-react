@@ -1,7 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Radium from 'radium';
-import plumb from 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3-min.js';
+import 'imports?this=>window!script!../../node_modules/jsplumb/dist/js/jsPlumb-2.0.3-min.js';
 import SoundByte from 'components/widgets/audio/SoundByte';
 import AudioRecorder from 'components/widgets/audio/AudioRecorder';
 import KnowledgeTarget from 'components/widgets/text/KnowledgeTarget';
@@ -9,23 +8,23 @@ import Victor from 'victor';
 import Rx from 'rx';
 import { aabbLine } from 'utils/geom';
 import {
-  uploadAudio,
   processWidgetData
 } from 'actions/langit';
-import { fromJS, List } from 'immutable';
+import { List } from 'immutable';
 
 @Radium
 export default class Langit extends React.Component {
   static propTypes = {
     id: React.PropTypes.string.isRequired,
-    model: React.PropTypes.object,
-    saveRecording: React.PropTypes.func.isRequired
+    saveRecording: React.PropTypes.func.isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+    model: React.PropTypes.object
   }
 
   constructor(props) {
     super(props);
-    this.widgetRefs = List();
-    this.state = {showAudioRecorder: false};
+    this.widgetRefs = new List();
+    this.state = { showAudioRecorder : false };
   }
 
   componentDidMount () {
@@ -42,8 +41,8 @@ export default class Langit extends React.Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if(this._hasChanged(this.props.model, prevProps.model))this._positionElements();
-    if(this.state.showAudioRecorder !== prevState.showAudioRecorder)this._positionElements();
+    if ( this._hasChanged(this.props.model, prevProps.model) )this._positionElements();
+    if ( this.state.showAudioRecorder !== prevState.showAudioRecorder )this._positionElements();
   }
 
   _hasChanged (obj, against) {
@@ -52,7 +51,7 @@ export default class Langit extends React.Component {
 
   _addFBListeners () {
     const { dispatch, id } = this.props;
-    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+    const baseFBUrl = 'https://saysss.firebaseio.com/';
     const langitUrl = `${baseFBUrl}langits/${id}/widgets`;
     this.fbChatRef = new Firebase(langitUrl);
     this.fbChatRef.on('value', snapShot => {
@@ -63,7 +62,7 @@ export default class Langit extends React.Component {
   _addResizeListeners () {
     this.resizes = Rx.Observable.fromEvent(window, 'resize');
     this.resizes
-      .subscribe(e => this._positionElements(0));
+      .subscribe(() => this._positionElements(0));
   }
 
   _toggleAudioRecorder () {
@@ -83,8 +82,8 @@ export default class Langit extends React.Component {
   _createPlubInstance () {
     this.plumbInstance = jsPlumb.getInstance({Container: this.plumbContainer});
     this.plumbInstance.importDefaults({
-      Connector : [ "Straight" ],
-      Anchors : [ "Center", "Center" ],
+      Connector : [ 'Straight' ],
+      Anchors : [ 'Center', 'Center' ],
       Endpoints: ['Blank', 'Blank']
     });
   }
@@ -93,15 +92,14 @@ export default class Langit extends React.Component {
     const { kwCenterX, kwCenterY, kwWidth, kwHeight } = this._positions();
     const startAngle = 150;
     const endAngle = 50;
-    const availableDeg = 360 - (startAngle - endAngle)
-    const degInc = availableDeg/this.widgetRefs.size;
+    const availableDeg = 360 - (startAngle - endAngle);
+    const degInc = availableDeg / this.widgetRefs.size;
 
     this._positionAudioPlayer(speed);
 
     this.widgetRefs
       .map(ref => this.refs[ref])
       .map((domNode, index) => {
-
         this.plumbInstance.connect({
           source:domNode,
           target:this.knowledgeTargetContainer
@@ -115,10 +113,10 @@ export default class Langit extends React.Component {
           .normalize()
           .multiplyScalar(10000);
 
-        const left = -kwWidth/2;
-        const right = kwWidth/2;
-        const top = -kwHeight/2;
-        const bottom = kwHeight/2;
+        const left = -kwWidth / 2;
+        const right = kwWidth / 2;
+        const top = -kwHeight / 2;
+        const bottom = kwHeight / 2;
 
         const boxPoint = aabbLine(angleVec.x, angleVec.y, left, top, right, bottom);
 
@@ -146,7 +144,6 @@ export default class Langit extends React.Component {
             this.plumbInstance.repaintEverything();
           }
         });
-
       });
   }
 
@@ -158,10 +155,10 @@ export default class Langit extends React.Component {
       const arWidth = this.audioRecorderContainer.offsetWidth;
       const arHeight = this.audioRecorderContainer.offsetHeight;
 
-      const startX = kwCenterX-arWidth/2;
-      const startY = kwCenterY-arHeight/2;
-      const targetX = kwCenterX-arWidth/2;
-      const targetY = kwCenterY+kwHeight/2 + 20;
+      const startX = kwCenterX - arWidth / 2;
+      const startY = kwCenterY - arHeight / 2;
+      const targetX = kwCenterX - arWidth / 2;
+      const targetY = kwCenterY + kwHeight / 2 + 20;
 
       TweenMax.to(this.audioRecorderContainer, speed, {
         startAt: {
@@ -180,8 +177,8 @@ export default class Langit extends React.Component {
     const kwHeight = this.knowledgeTargetContainer.offsetHeight;
     const kwLeft = this.knowledgeTargetContainer.offsetLeft;
     const kwTop = this.knowledgeTargetContainer.offsetTop;
-    const kwCenterX = kwLeft + kwWidth/2;
-    const kwCenterY = kwTop + kwHeight/2;
+    const kwCenterX = kwLeft + kwWidth / 2;
+    const kwCenterY = kwTop + kwHeight / 2;
 
     return {
       kwWidth,
@@ -194,26 +191,25 @@ export default class Langit extends React.Component {
   }
 
   _buildWidgets () {
-    const { id, model } = this.props;
+    const { model } = this.props;
     const styles = {
-        position: 'absolute',
-        opacity: 0
+      position: 'absolute',
+      opacity: 0
     };
 
-    this.widgetRefs = List();
+    this.widgetRefs = new List();
 
-    if (model) {
+    if ( model ) {
       const widgets = model.get('widgets');
 
-      if(widgets){
-
+      if ( widgets ) {
         return widgets
-          .map((widget, id) => {
-            const ref = `widget_${id}`;
+          .map((widget, key) => {
+            const ref = `widget_${key}`;
             this.widgetRefs = this.widgetRefs.push(ref);
             return (
               <div key={ref} ref={ref} style={styles}>
-                <SoundByte id={id} model={widget}/>
+                <SoundByte id={key} model={widget}/>
               </div>
             );
           })
@@ -224,20 +220,20 @@ export default class Langit extends React.Component {
     return '';
   }
 
-  _renderAudioRecorder (position) {
+  _renderAudioRecorder () {
     const { showAudioRecorder } = this.state;
 
     const styles = {
       position: 'absolute',
       opacity: 0
-    }
+    };
 
-    if (showAudioRecorder) {
-        return (
-          <div ref={node=>this.audioRecorderContainer = node} style={styles}>
-            <AudioRecorder save={::this._saveRecording} cancel={::this._cancelRecording} />
-          </div>
-        );
+    if ( showAudioRecorder ) {
+      return (
+        <div ref={node=>this.audioRecorderContainer = node} style={styles}>
+          <AudioRecorder save={::this._saveRecording} cancel={::this._cancelRecording} />
+        </div>
+      );
     } else {
       return '';
     }
@@ -256,11 +252,11 @@ export default class Langit extends React.Component {
 
     const innerContainerStyles = {
       pointerEvents:'none'
-    }
+    };
 
     return (
       <div style={outerContainerStyles} >
-        <div ref={node => {this.knowledgeTargetContainer = node}} style={innerContainerStyles}>
+        <div ref={node => this.knowledgeTargetContainer = node} style={innerContainerStyles}>
           <KnowledgeTarget langitId={id} audioFunc={::this._toggleAudioRecorder} />
         </div>
       </div>

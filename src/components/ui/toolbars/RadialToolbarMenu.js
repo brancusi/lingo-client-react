@@ -6,7 +6,7 @@ import IconButton from 'components/ui/buttons/IconButton';
 @Radium
 export default class RadialToolbarMenu extends React.Component {
   static propTypes = {
-    links: React.PropTypes.array.isRequired,
+    links: React.PropTypes.array.isRequired
   }
 
   componentDidMount () {
@@ -30,7 +30,7 @@ export default class RadialToolbarMenu extends React.Component {
       left: 0
     };
 
-    const inc = 90/(links.length-1);
+    const inc = 90 / (links.length - 1);
     const menuItems = links
       .map((link, i) => {
         const point = new Victor(90, 0)

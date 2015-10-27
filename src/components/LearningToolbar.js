@@ -19,7 +19,7 @@ export default class LearningToolbar extends React.Component {
       left: '100%',
       marginLeft: '-80px',
       zIndex: 1001
-    }
+    };
 
     const uiProps = {
       icon: 'fa-plus',
@@ -28,7 +28,7 @@ export default class LearningToolbar extends React.Component {
       click: createLangit,
       overTween: {opacity: 0.8},
       outTween: {opacity: 1}
-    }
+    };
 
     return (
       <div style={styles}>

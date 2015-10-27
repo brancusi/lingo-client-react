@@ -28,7 +28,7 @@ export default class SoundByte extends React.Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    return this._hasChanged(nextProps, this.props) || (this.state.guid !== nextState.guid)
+    return this._hasChanged(nextProps, this.props) || (this.state.guid !== nextState.guid);
   }
 
   _hasChanged (obj, against) {
@@ -36,39 +36,32 @@ export default class SoundByte extends React.Component {
   }
 
   render () {
-    const { model } = this.props;
-
-    // const age = Math.floor(Math.random() * ((50-100)+1) + 100);
     const age = 50;
 
     const styles = {
-      // border: '1px solid red',
       position: 'absolute',
       minWidth: age,
       minHeight: age,
-      marginTop: -age/2,
-      marginLeft: -age/2,
-      zIndex: '1000',
-      // background: '#FDF9FF',
-      // border: '8px solid #DADADA',
-      // borderRadius: '50%'
+      marginTop: -age / 2,
+      marginLeft: -age / 2,
+      zIndex: '1000'
     };
 
     const { data } = this.state;
     const { id } = this.props;
 
-    if(data){
+    if ( data ) {
       const playProps = {
         guid: id,
         blob: data
-      }
+      };
 
       return (
         <div style={styles}>
           <Player data={playProps} size={age}/>
         </div>
       );
-    }else{
+    } else {
       return (
         <div style={styles}>
           Loading

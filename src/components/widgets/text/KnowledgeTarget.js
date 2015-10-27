@@ -1,6 +1,5 @@
 import React from 'react';
 import Radium from 'radium';
-import Rx from 'rx';
 import LangitToolbar from 'components/ui/toolbars/LangitToolbar';
 
 @Radium
@@ -17,7 +16,7 @@ export default class KnowledgeTarget extends React.Component {
   _createPad () {
     const { langitId } = this.props;
 
-    const fbBaseUrl = 'https://lingoapp.firebaseio.com/langits/';
+    const fbBaseUrl = 'https://saysss.firebaseio.com/langits/';
     const fbRef = `${fbBaseUrl}${langitId}/target/colab`;
     const firepadRef = new Firebase(fbRef);
 
@@ -53,31 +52,28 @@ export default class KnowledgeTarget extends React.Component {
 
   _updatePlaceHolder () {
     const value = this.session.getValue();
-    if (value && this.placeHolder) {
-        this.editor.renderer.scroller.removeChild(this.placeHolder);
-        this.placeHolder = this.editor.renderer.emptyMessageNode = null;
-    } else if (!value && !this.placeHolder) {
-        this.placeHolder = this.editor.renderer.emptyMessageNode = document.createElement("div");
-        this.placeHolder.textContent = "Start typing...";
-        this.placeHolder.className = "ace_invisible";
-        this.placeHolder.style.padding = "0 5px";
-        this.editor.renderer.scroller.appendChild(this.placeHolder);
+    if ( value && this.placeHolder ) {
+      this.editor.renderer.scroller.removeChild(this.placeHolder);
+      this.placeHolder = this.editor.renderer.emptyMessageNode = null;
+    } else if ( !value && !this.placeHolder ) {
+      this.placeHolder = this.editor.renderer.emptyMessageNode = document.createElement('div');
+      this.placeHolder.textContent = 'Start typing...';
+      this.placeHolder.className = 'ace_invisible';
+      this.placeHolder.style.padding = '0 5px';
+      this.editor.renderer.scroller.appendChild(this.placeHolder);
     }
-	}
+  }
 
   render () {
     const { audioFunc } = this.props;
 
     const styles = {
-
       '@media (max-width: 1100px)': {
         width: '50vw'
       },
-
       '@media (min-width: 1100px)': {
         width: '40vw'
       },
-
       margin: 'auto',
       paddingTop: 80,
       paddingRight: 50,
@@ -101,7 +97,7 @@ export default class KnowledgeTarget extends React.Component {
       left: '100%',
       marginLeft: 40,
       top: 70
-    }
+    };
 
     return (
       <div style={styles}>

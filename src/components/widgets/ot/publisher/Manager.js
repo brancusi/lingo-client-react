@@ -1,17 +1,15 @@
 import React from 'react';
 import Radium from 'radium';
-import { fromJS } from 'immutable';
 import Media from 'components/widgets/ot/publisher/Media';
 import HoverToolbar from 'components/ui/toolbars/HoverToolbar';
 import IconButton from 'components/ui/buttons/IconButton';
 import ImageLoader from 'components/ui/images/ImageLoader';
 
-
 @Radium
 export default class Manager extends React.Component {
   static propTypes = {
     session: React.PropTypes.object,
-    profileImageUrl: React.PropTypes.string,
+    profileImageUrl: React.PropTypes.string
   }
 
   constructor(props) {
@@ -38,8 +36,7 @@ export default class Manager extends React.Component {
       color: 'white',
       background: 'rgba(0,0,0,0.8)',
       border: '0',
-      click: (::this._toggleAudio),
-
+      click: (::this._toggleAudio)
     };
 
     const videoToggleProps = {
@@ -89,12 +86,10 @@ export default class Manager extends React.Component {
         </div>
       );
     }
-
   }
 
   _createMediaOutlet () {
     const { publishVideo, publishAudio } = this.state;
-
     const { session, profileImageUrl } = this.props;
     const containerStyles = {
       position: 'absolute',

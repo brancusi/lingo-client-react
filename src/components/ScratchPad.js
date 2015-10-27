@@ -70,9 +70,9 @@ export default class ScratchPad extends React.Component {
   _langitWithId (id) {
     const { langits = new Map() } = this.props;
     const match = langits.get(id);
-    if(match){
+    if ( match ) {
       return match;
-    }else{
+    } else {
       return fromJS({widgets:{}});
     }
   }
@@ -87,15 +87,21 @@ export default class ScratchPad extends React.Component {
       dispatch
     };
 
-    return (<Langit {...props} />)
+    return (<Langit {...props} />);
   }
 
   _buildScratchElement (item) {
-    switch(item.type) {
-      case LANGIT :
-        return this._createLangit(item.id);
+    let el;
+    switch ( item.type ) {
+    case LANGIT :
+      el = this._createLangit(item.id);
+      break;
+    default :
+
       break;
     }
+
+    return el;
   }
 
   render () {
@@ -116,8 +122,6 @@ export default class ScratchPad extends React.Component {
       .sort((a, b) => a.t - b.t)
       .map(item => this._buildScratchElement(item))
       .toArray();
-
-
 
     return (
       <div className='col-sm-12' style={styles}>

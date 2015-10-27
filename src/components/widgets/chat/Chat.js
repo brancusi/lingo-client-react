@@ -2,7 +2,6 @@ import React from 'react';
 import Radium from 'radium';
 import Message from 'components/widgets/chat/Message';
 import IconButton from 'components/ui/buttons/IconButton';
-import { Map } from 'immutable';
 
 const MINIMIZED_HEIGHT = 130;
 
@@ -33,7 +32,6 @@ export default class Chat extends React.Component {
     if (propsChanged) {
       this._scrollBottom();
     }
-
   }
 
   toggle () {
@@ -41,16 +39,15 @@ export default class Chat extends React.Component {
   }
 
   _syncToggle () {
-    if(this.state.expanded){
-      const targetHeight = window.innerHeight/3;
+    if ( this.state.expanded ) {
+      const targetHeight = window.innerHeight / 3;
       TweenMax.to(this.container, 0.4, {height:targetHeight, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
-    }else{
+    } else {
       TweenMax.to(this.container, 0.3, {height:MINIMIZED_HEIGHT, ease:Expo.easeOut, onComplete:(::this._scrollBottom), onUpdate:(::this._scrollBottom)});
     }
   }
 
   _scrollBottom () {
-
     const { historyContainer } = this.refs;
     historyContainer.scrollTop = historyContainer.scrollHeight;
   }
@@ -89,7 +86,7 @@ export default class Chat extends React.Component {
       width: '100%',
       overflow: 'auto',
       boxShadow: '0px 6px 24px 0px rgba(158,158,158,0.4)',
-      zIndex: 100,
+      zIndex: 100
     };
 
     const inputStyles = {
@@ -99,7 +96,6 @@ export default class Chat extends React.Component {
       marginTop: '0.5rem',
       marginBottom: '0.5rem',
       padding: '1rem',
-
       ':focus': {
         outline: 0
       }
@@ -110,11 +106,11 @@ export default class Chat extends React.Component {
       left: 370,
       top:-22,
       zIndex: 1
-    }
+    };
 
     const messages = sessionChat
-      .map((msg, key) => {
-        return (<Message key={key} message={msg} />);
+      .map((message, key) => {
+        return (<Message key={key} message={message} />);
       }).toArray();
 
     const toggleUiProps = {

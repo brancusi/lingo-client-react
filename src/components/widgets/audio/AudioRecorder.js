@@ -72,7 +72,7 @@ export default class AudioRecorder extends React.Component {
       alignItems: 'center',
       display: 'flex',
       justifyContent: 'space-between'
-    }
+    };
 
     const recordingUIProps = {
       size:SIZE,
@@ -103,14 +103,14 @@ export default class AudioRecorder extends React.Component {
       display: 'flex',
       justifyContent: 'flex-end',
       alignItems: 'flex-end',
-      top: HEIGHT-14,
+      top: HEIGHT - 14,
       left: 26,
       width: '100%'
-    }
+    };
 
     const iconContainerStyles = {
       paddingLeft: 7
-    }
+    };
 
     const okProps = {
       size:40,

@@ -1,6 +1,5 @@
 import React from 'react';
 import Radium from 'radium';
-import moment from 'moment';
 
 @Radium
 export default class Message extends React.Component {
@@ -10,12 +9,8 @@ export default class Message extends React.Component {
   }
 
   render () {
-    const { message : { m, t, u } } = this.props;
-    const timeAgo = moment(t).format('HH:mm');
-
-    const styles = {
-      // border: '1px solid red'
-    };
+    const { message : { m, u } } = this.props;
+    const styles = {};
 
     const messageStyles = {
       fontSize: '0.9em',

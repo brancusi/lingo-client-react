@@ -2,7 +2,6 @@ import React from 'react';
 import Radium from 'radium';
 import PublishManager from 'components/widgets/ot/publisher/Manager';
 import StreamsManager from 'components/widgets/ot/streams/Manager';
-import guid from 'utils/guid';
 
 @Radium
 export default class OTStreams extends React.Component {

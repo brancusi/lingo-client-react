@@ -10,8 +10,8 @@ export function processWidgetData (payload) {
 }
 
 export function persistAudio (sessionId, langitId, path) {
-  return dispatch => {
-    const baseFBUrl = 'https://lingoapp.firebaseio.com/';
+  return () => {
+    const baseFBUrl = 'https://saysss.firebaseio.com/';
     const fbRef = new Firebase(`${baseFBUrl}langits/${langitId}/widgets`);
     const payload = {type:'audio', url:path};
     return new Promise((res, rej)=>{
@@ -23,14 +23,14 @@ export function persistAudio (sessionId, langitId, path) {
 export function uploadAudio (sessionId, langitId, recording) {
   return dispatch => {
     return new Promise((res, rej) => {
-      fetch(`http://localhost:3000/aws/sign`, { method: 'post'})
+      fetch(`https://api.saysss.com/aws/sign`, { method: 'post'})
         .then(response => response.json())
         .then(awsData => {
           const { signed_url, path } = awsData;
           fetch(signed_url, { method: 'put', body: recording.blob})
-            .then(response => res(dispatch(persistAudio(sessionId, langitId, path))))
+            .then(() => res(dispatch(persistAudio(sessionId, langitId, path))))
             .catch(err => rej(err));
         });
     });
-  }
+  };
 }
